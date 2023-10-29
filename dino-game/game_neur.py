@@ -16,29 +16,30 @@ SCREEN_WIDTH = 1100
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Cargar imágenes para el juego
-RUNNING = [pygame.image.load(os.path.join("assets/Dino", "DinoRun1.png")),
-           pygame.image.load(os.path.join("assets/Dino", "DinoRun2.png"))]
+root = "dino-game"
+RUNNING = [pygame.image.load(os.path.join(root, "assets/Dino", "DinoRun1.png")),
+           pygame.image.load(os.path.join(root, "assets/Dino", "DinoRun2.png"))]
 
-JUMPING = pygame.image.load(os.path.join("assets/Dino", "DinoJump.png"))
+JUMPING = pygame.image.load(os.path.join(root, "assets/Dino", "DinoJump.png"))
 
-DUCKING = [pygame.image.load(os.path.join("assets/Dino", "DinoDuck1.png")),
-           pygame.image.load(os.path.join("assets/Dino", "DinoDuck2.png"))]
+DUCKING = [pygame.image.load(os.path.join(root, "assets/Dino", "DinoDuck1.png")),
+           pygame.image.load(os.path.join(root, "assets/Dino", "DinoDuck2.png"))]
 
-SMALL_CACTUS = [pygame.image.load(os.path.join("assets/Cactus", "SmallCactus1.png")),
-                pygame.image.load(os.path.join("assets/Cactus", "SmallCactus2.png")),
-                # pygame.image.load(os.path.join("Assets/Cactus", "SmallCactus3.png"))
+SMALL_CACTUS = [pygame.image.load(os.path.join(root, "assets/Cactus", "SmallCactus1.png")),
+                pygame.image.load(os.path.join(root, "assets/Cactus", "SmallCactus2.png")),
+                # pygame.image.load(os.path.join(root, "assets/Cactus", "SmallCactus3.png"))
                 ]
 
-LARGE_CACTUS = [pygame.image.load(os.path.join("assets/Cactus", "LargeCactus1.png")),
-                # pygame.image.load(os.path.join("Assets/Cactus", "LargeCactus2.png")),
-                pygame.image.load(os.path.join("assets/Cactus", "LargeCactus3.png"))]
+LARGE_CACTUS = [pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus1.png")),
+                # pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus2.png")),
+                pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus3.png"))]
 
-BIRD = [pygame.image.load(os.path.join("assets/Bird", "Bird1.png")),
-        pygame.image.load(os.path.join("assets/Bird", "Bird2.png"))]
+BIRD = [pygame.image.load(os.path.join(root, "assets/Bird", "Bird1.png")),
+        pygame.image.load(os.path.join(root, "assets/Bird", "Bird2.png"))]
 
-# CLOUD = pygame.image.load(os.path.join("Assets/Other", "Cloud.png"))
+# CLOUD = pygame.image.load(os.path.join(root, "assets/Other", "Cloud.png"))
 
-BG = pygame.image.load(os.path.join("Assets/Other", "Track.png"))
+BG = pygame.image.load(os.path.join(root, "assets/Other", "Track.png"))
 
 # Clase para representar al dinosaurio del juego
 #todo ===================[Dino]===================
@@ -222,7 +223,7 @@ def main():
     x_pos_bg = 0
     y_pos_bg = 380
     points = 0      #? variable que nos interesa para el algoritmo evolutivo
-    font = pygame.font.Font('assets/PressStart2P-Regular.ttf', 20)
+    font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
 
     time_prev = time.time()
     time_next_obstacle = 10
@@ -331,7 +332,7 @@ def menu():
     run = True
 
     SCREEN.fill((255, 255, 255))
-    font = pygame.font.Font('assets/PressStart2P-Regular.ttf', 30)
+    font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 30)
 
     # Menu principal, cuando recien empieza el juego
     text = font.render("Press any Key to Start", True, (0, 0, 0))
@@ -350,7 +351,7 @@ def menu():
 
                 # Menu de restart
                 SCREEN.fill((255, 255, 255))
-                font = pygame.font.Font('assets/PressStart2P-Regular.ttf', 30)
+                font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 30)
                 text = font.render("Press any Key to Restart", True, (0, 0, 0))
                 score = font.render("Your Score: " + str(points), True, (0, 0, 0))
                 scoreRect = score.get_rect()
