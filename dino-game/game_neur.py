@@ -212,7 +212,7 @@ class Bird(Obstacle):
 
 #todo ===================[MAIN]===================
 def main():
-    global game_speed, x_pos_bg, y_pos_bg, points, obstacles
+    global game_speed, x_pos_bg, y_pos_bg, points, obstacles, check_interval
     run = True
     clock = pygame.time.Clock()
     player = Dinosaur()
@@ -225,14 +225,23 @@ def main():
     points = 0      #? variable que nos interesa para el algoritmo evolutivo
     font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
 
+    # Cada n frame hace un check, para no sobrecargar la compu ir chequeando
+    # frame por frame
+    counter = 0
+    vel_check = 220
+    check_interval = vel_check//game_speed
+
+
     time_prev = time.time()
     time_next_obstacle = 10
 
     def score():
-        global points, game_speed
+        global points, game_speed, check_interval
         points += 1
         if points % 100 == 0:   # aumenta la velocidad del juego cada 100 puntos
-            game_speed += 0.4
+            # Tener una velocidad maxima
+            game_speed = min(60, game_speed + 0.4)
+            check_interval = vel_check//game_speed
 
         text = font.render("Points: " + str(points), True, (0, 0, 0))
         textRect = text.get_rect()
@@ -310,7 +319,7 @@ def main():
 
         # lista de UP y DOWN
         userInput = pygame.key.get_pressed()
-        userInput = [userInput[pygame.K_UP], userInput[pygame.K_DOWN]]
+        userInput = [userInput[pygame.K_UP], userInput[pygame.K_DOWN], userInput[pygame.K_SPACE]]
         # print(userInput)
         player.draw(SCREEN)
         player.update(userInput)
@@ -321,6 +330,15 @@ def main():
         # cloud.update()
 
         score()
+
+        #* Contador de frame, cada n frame hace una "captura", en vez de hacer todo el tiempo 
+        #* Se puede ver que a medida se aumenta la game_speed, la captura se hace cada vez mas
+        #* rapido
+        if counter >= check_interval:
+            counter = 0
+            pygame.draw.rect(SCREEN, (255, 0, 0), pygame.Rect(100, 100, 100, 100))
+        else:
+            counter += 1
 
         clock.tick(50)
         pygame.display.update()
