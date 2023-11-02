@@ -6,7 +6,7 @@ from collections import deque
 
 pygame.init()
 
-#! Detalle para pensar: el dinosaurio en realidad esta quito, lo que se mueve es el fondo
+#! Detalle para pensar: el dinosaurio en realidad esta quieto, lo que se mueve es el fondo
 #! con los obstaculos, asi que la distancia del dino al obstaculo se podria calcular
 #! directo como la "x" del obstaculo tal vez.
 
@@ -87,7 +87,7 @@ class Dinosaur:
 
         #? Bajar rapido
         elif userInput[1] and self.dino_jump:
-            self.jump_vel -= 6
+            self.jump_vel -= 2
 
         elif userInput[1] and not self.dino_jump:
             self.dino_duck = True
@@ -209,7 +209,6 @@ class Bird(Obstacle):
         SCREEN.blit(self.image[self.index//5], self.rect)
         self.index += 1
 
-
 #todo ===================[MAIN]===================
 def main():
     global game_speed, x_pos_bg, y_pos_bg, points, obstacles, check_interval
@@ -230,7 +229,6 @@ def main():
     counter = 0
     vel_check = 220
     check_interval = vel_check//game_speed
-
 
     time_prev = time.time()
     time_next_obstacle = 10
@@ -271,7 +269,7 @@ def main():
         #* Generacion de los obstaculos: 
         if len(obstacles) == 0 or (time.time() - time_prev) > time_next_obstacle:
             time_prev = time.time()
-            time_next_obstacle = random.uniform(0.5, 3)
+            time_next_obstacle = random.uniform(0.6, 3)    # tiempo entre generacion de obstaculos
             idx_obs = random.randint(0, 2)
             match idx_obs:
                 case 0:
@@ -342,7 +340,6 @@ def main():
 
         clock.tick(50)
         pygame.display.update()
-
 
 # Función que muestra el menú inicial y maneja reinicios
 def menu():
