@@ -2,7 +2,7 @@ import numpy as np
 from entrenamiento_MLP import *
 
 nombreArchivo = 'dataSet.csv'
-arquitectura = [10, 3]
+arquitectura = [10, 5, 5, 3]
 tasaErrorAceptable = 0.1
 numMaxEpocas = 550
 gammab = 0.018

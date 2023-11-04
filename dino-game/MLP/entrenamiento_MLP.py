@@ -182,7 +182,7 @@ def entrenamiento_MLP(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpo
             # # .all() comprueba que todos sean True, entonces si no son todos True cuento un error 
             # contErrores += 1 if ((newY == Yd[i]).all()) == False else 0   
 
-            contErrores += np.argmax(Y_vec[-1]) == np.argmax(Yd[i])
+            contErrores += np.argmax(Y_vec[-1]) != np.argmax(Yd[i])
 
             # if i % 5 == 0:
             #     aa = np.zeros_like(Y_vec[-1])

@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 # #! ===============[Origin]
 
 # def main():
@@ -144,10 +145,10 @@ import csv
 #     for row in csvreader:
 #         print(type(row))
 
-with open('dataSetAux.csv', 'a') as file:
-    datas = [[1, 2, 3], [6, 6], [10]] #! Todos son 1D, se complica la cosa
-    for data in datas:
-        np.savetxt(file, [data], delimiter=',') #! De toda manera pasarlo a 2D
+# with open('dataSetAux.csv', 'a') as file:
+#     datas = [[1, 2, 3], [6, 6], [10]] #! Todos son 1D, se complica la cosa
+#     for data in datas:
+#         np.savetxt(file, [data], delimiter=',') #! De toda manera pasarlo a 2D
         # np.savetxt(file, data, delimiter=',')
 
 
@@ -156,6 +157,29 @@ with open('dataSetAux.csv', 'a') as file:
 #     data = [[1, 2, 3]] #* si se puede, 2D!!!!
 #     np.savetxt(file, data, delimiter=',')
 
+# df = pd.read_csv('neurWeightMLP.csv', delimiter=',',dtype=float, na_values=0)
+
+# maxStructure = 10
+# df = pd.read_csv('neurWeightMLP.csv', delimiter=',', usecols=range(10), header=None) #!NOP
+
+
+#? Perfecto
+# structure = [10, 5, 5, 3]
+# skrow = 0
+# for n in structure:
+#     df = pd.read_csv('neurWeightMLP.csv', delimiter=',',
+#                       header=None, skiprows=skrow, nrows=n) 
+#     skrow += n
+#     matrix = df.to_numpy()
+#     print(type(matrix))
+#     print(matrix.shape[0])
+
+a = np.arange(3)
+b = [-1]
+c = np.concatenate([b, a]) # a y b deben ser al menos 1D, no acepta constante que es 0D
+print(c)
+
 #! Tiene problema
 # data = np.genfromtxt('dataSetAux.csv', delimiter=',')
 # print(data)
+
