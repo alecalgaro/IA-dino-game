@@ -1,5 +1,4 @@
 import numpy as np
-from desordenarDatos import *
 
 def cargarDatos(nombreArchivo, cantSalidas):
     """
@@ -12,10 +11,11 @@ def cargarDatos(nombreArchivo, cantSalidas):
     """
 
     # Se usa la funcion genfromtxt de Numpy para cargar archivos csv
-    datos = np.genfromtxt(nombreArchivo, delimiter=',')
+    data = np.genfromtxt(nombreArchivo, delimiter=',')
 
     # Desordeno las filas de datos por si venian ordenados por categoria
-    data = desordenarDatos(datos)  
+    randIdx = np.random.permutation(data.shape[0])
+    data = data[randIdx]  
     
     # --- Separo las entradas y las salidas deseadas ---
     

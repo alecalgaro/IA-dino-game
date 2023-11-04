@@ -1,11 +1,10 @@
 import numpy as np
 from cargarDatos import *
 from sigmoidea import *
-from graficas import *
 from winnerTakesAll import *
 
 def entrenamiento_MLP(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpocas,  
-                      gamma, bSigmoidea=1, grafError=False):
+                      gamma, bSigmoidea=1):
     """
     Algoritmo de entrenamiento del perceptron multicapa.
     Entradas: datos, arquitectura de capas (por ejemplo [3 2]), tasa de error aceptable, 
@@ -70,10 +69,6 @@ def entrenamiento_MLP(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpo
     # Para el ejemplo [3, 2] tendria deltas = [array([0., 0., 0.]), array([0., 0.])]
     for i in arquitectura:
         deltas.append(np.zeros(i))
-
-    # Iniciar graficas para errores
-    if(grafError):
-        (ax, ax2) = iniciarGraficasErrores()
 
     #* ----- Bucle general ----- 
     while(contEpocas < numMaxEpocas and tasaErrorActual > tasaErrorAceptable):
@@ -183,17 +178,24 @@ def entrenamiento_MLP(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpo
             vf = np.matmul(W_mat[-1], Y_vec[-2])
             Y_vec[-1] = sigmoidea(vf, bSigmoidea)
 
-            if arquitectura[-1] > 1:    #* si hay mas de una salida al final (mas de una neurona en la capa final)
-                newY = winnerTakesAll(Y_vec) 
-                # .all() comprueba que todos sean True, entonces si no son todos True cuento un error
-                contErrores += 1 if ((newY == Yd[i]).all()) == False else 0  
-                EC = np.sum(np.power(Yd[i]-Y_vec[-1], 2))
-                # en la formula del EC multplica por 1/2 pero no hace falta, solo escala. Cuando se usaba y luego
-                # se saca la derivada ahi si tiene sentido usar el 1/2 para que se cancele con el ^2 al derivar
-            else:   #* si hay una sola salida final
-                clasificacion = 1 if Y_vec[-1] >= 0 else -1
-                contErrores += Yd[i][0] != clasificacion
-                EC = np.sum(np.power(Yd[i]-Y_vec[-1], 2))
+            # newY = winnerTakesAll(Y_vec)  
+            # # .all() comprueba que todos sean True, entonces si no son todos True cuento un error 
+            # contErrores += 1 if ((newY == Yd[i]).all()) == False else 0   
+
+            contErrores += np.argmax(Y_vec[-1]) == np.argmax(Yd[i])
+
+            # if i % 5 == 0:
+            #     aa = np.zeros_like(Y_vec[-1])
+            #     idxaa = np.argmax(Y_vec[-1])
+            #     aa[idxaa] = 1
+            #     print("Ver:")
+            #     print(aa)
+            #     print(Yd[i])
+            #     print("")
+
+
+
+            EC = np.sum(np.power(Yd[i]-Y_vec[-1], 2))
 
             errorProm += EC
 
@@ -204,11 +206,9 @@ def entrenamiento_MLP(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpo
         # Calculo el error cuadratico medio en validacion (error interno de la red)
         errorCuadraticoPromedio = errorProm/cantPatrones
         errorCuadPlot.append(errorCuadraticoPromedio)
-        print(errorCuadraticoPromedio)
 
-        # Actualizo las graficas de errores
-        if(grafError):
-            actualizarGraficasErrores(ax, ax2, errorCuadPlot, tasaErrorPlot)
+        print(errorCuadraticoPromedio)
+        print(round(tasaErrorActual, 3))
 
     #* fin del while general
 
