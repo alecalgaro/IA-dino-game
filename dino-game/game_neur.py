@@ -4,6 +4,7 @@ import random
 import time
 from collections import deque
 import numpy as np
+from Neuron.neuron import Neuron
 
 pygame.init()
 
@@ -42,8 +43,7 @@ BIRD = [pygame.image.load(os.path.join(root, "assets/Bird", "Bird1.png")),
 
 BG = pygame.image.load(os.path.join(root, "assets/Other", "Track.png"))
 
-# Clase para representar al dinosaurio del juego
-#todo ===================[Dino]===================
+#todo ======================================[Class Dino]======================================
 class Dinosaur:
     X_POS = 80
     Y_POS = 310
@@ -51,7 +51,7 @@ class Dinosaur:
     JUMP_VEL = 8
     GRAVITY = 0.6
 
-    def __init__(self, randStart = False):
+    def __init__(self, randStart = False, iPlay = True):
         self.duck_img = DUCKING
         self.run_img = RUNNING
         self.jump_img = JUMPING
@@ -68,21 +68,34 @@ class Dinosaur:
 
         self.randN = randStart*np.random.uniform(-10, 220)
         self.dino_rect.x = self.X_POS + self.randN
-
         self.dino_rect.y = self.Y_POS
 
-    def update(self, userInput):
-        if self.dino_duck:
-            self.duck()
-        if self.dino_run:
-            self.run()
-        if self.dino_jump:
-            self.jump()
+        #? Inicializar el "celebro" del dino y empieze caminando
+        self.brain = Neuron()
+        self.decision = [False, False, True]
+        self.alpha = 1
 
-        if self.step_index >= 10:
-            self.step_index = 0
+        # Armo su celebro si NO juego yo
+        #? Estructura de la neurona, HAY QUE ACLARAR AQUI
+        if(not(iPlay)):
+            #* Cargar pesos 
+            # link = 'neurWeightMLP.csv'
+            # structure = [10, 5, 5, 3]
+            # self.brain.loadNeuralWeight(link, structure)
 
-        #? =====[Teclas que se presionan]=====
+            #* Inicializar los pesos en el rango [-0.5, 0.5]
+            self.brain.initNeuralWeight()
+
+    
+    #? =================[Actualizar en base a desicion de neurona o del jugador]=================
+
+    def updateDecision(self, neuralInput):
+        self.decision = self.brain.forwardPropagation(neuralInput, self.alpha)
+
+    def updateNeuralInput(self):
+        self.updateUserInput(self.decision)
+
+    def updateUserInput(self, userInput):
 
         #* Cuando juegue la red neuronal habria que simular que presiona estas teclas
         if userInput[0] and not self.dino_jump:
@@ -103,11 +116,22 @@ class Dinosaur:
             self.dino_run = True
             self.dino_jump = False
 
+    def update(self):
+        if self.dino_duck:
+            self.duck()
+        if self.dino_run:
+            self.run()
+        if self.dino_jump:
+            self.jump()
+
+        if self.step_index >= 10:
+            self.step_index = 0
+
     #* Necesitamos solo su eje y
     def getDinoData(self):
         return (self.dino_rect.y)
 
-#? ===================[Estados del Dino]===================
+#? =================================[Estados del Dino]=================================
     def duck(self):
         self.image = self.duck_img[self.step_index // 5]
         self.dino_rect = self.image.get_rect()
@@ -140,11 +164,9 @@ class Dinosaur:
             self.jump_vel = self.JUMP_VEL
 
     def draw(self, SCREEN):
-        #! Hitbox check
-        # pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(self.dino_rect))
         SCREEN.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
 
-#todo ===================[Cloud]===================
+#todo ========================================[Class Cloud]========================================
 # Clase para representar nubes en el juego
 # class Cloud:
 #     def __init__(self):
@@ -164,7 +186,7 @@ class Dinosaur:
 
 # Clase base para obstáculos en el juego
 
-#todo ===================[Obstaculos]===================
+#todo ========================================[Class Obstaculo]========================================
 class Obstacle:
     def __init__(self, image, type):
         self.image = image
@@ -176,8 +198,6 @@ class Obstacle:
         self.rect.x -= game_speed
 
     def draw(self, SCREEN):
-        #! Hitbox check
-        # pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(self.rect))
         SCREEN.blit(self.image[self.type], self.rect)
 
     def getObstacleData(self):
@@ -211,12 +231,11 @@ class Bird(Obstacle):
     def draw(self, SCREEN):
         if self.index >= 9:
             self.index = 0
-        #! Hitbox check
-        # pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(self.rect))
+
         SCREEN.blit(self.image[self.index//5], self.rect)
         self.index += 1
 
-#todo ===================[MAIN]===================
+#todo ========================================[MAIN]========================================
 
 class Game:
 
@@ -228,13 +247,16 @@ class Game:
     VEL_CHECK = 220
     MAX_SPEED = 80
 
-    def __init__(self, nDino = 1, randStart=False) :
+    #* ==================[Constructor, inicializacion]==================
+
+    def __init__(self, nDino = 1, randStart=False, iPlay=True) :
         self.run = True
+        self.iPlay = iPlay #? Juega el juador, sino ignora sus inputs
 
         # Parametros para dino
         self.player = []
         for _ in range(nDino):
-            self.player.append(Dinosaur(randStart))
+            self.player.append(Dinosaur(randStart, iPlay))
 
         self.numLive = nDino
         self.idxLive = np.arange(nDino)
@@ -281,8 +303,10 @@ class Game:
     #? ========================[Obstacle]========================
     # Actualiza los obstaculos y retorna un booleano para indicar si salio o no de la pantalla
     def updateObstacle(self):
+
         #* Generacion de los obstaculos: 
         if len(self.obstacles) == 0 or (time.time() - self.time_prev) > self.time_next_obstacle:
+
             #* Crear nuevo obstaculo
             self.time_prev = time.time()
             self.time_next_obstacle = random.uniform(0.6, 2)    # tiempo entre generacion de obstaculos
@@ -301,7 +325,6 @@ class Game:
         out = obs_data[0] < -obs_data[3]
         if out:
             self.obstacles.popleft()
-            # print("borrar")
 
         #* Actualizar 
         for obstacle in self.obstacles:
@@ -312,7 +335,7 @@ class Game:
 
     #? ========================[Collision]========================
     def collision(self):
-        #! VER
+        
         X_POS = 70
 
         if(len(self.obstacles) > 0):
@@ -330,17 +353,19 @@ class Game:
         if isinstance(obstacle, Bird):
             obstacle_collision_rect = obstacle.rect.inflate(-60, -5)
 
-        #? check inflate
+        #? Hitbox
         pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(obstacle_collision_rect))
 
-        # ! GUARDAAAA
+        
+        # Recorrer cada dino y verificar si esta en colision
         for idx in self.idxLive[self.idxBoolLive]:
             player = self.player[idx]
             dino_collision_rect = player.dino_rect.inflate(-50, -5)
 
-            #? check inflate
+            #? Hitbox
             pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(dino_collision_rect))
 
+            # Haber colision, lo elimino de la lista y registro su indice con su puntaje 
             if dino_collision_rect.colliderect(obstacle_collision_rect):
                 self.numLive -= 1
                 self.idxBoolLive[idx] = False
@@ -348,14 +373,39 @@ class Game:
 
     #? ========================[Player]========================
     def updatePlayer(self):
-        userInput = pygame.key.get_pressed()
-        userInput = [userInput[pygame.K_UP], userInput[pygame.K_DOWN], userInput[pygame.K_RIGHT]]
 
-        for idx in self.idxLive[self.idxBoolLive]:
-            self.player[idx].update(userInput)
+        userInput = [False, False, False]
+
+        # Juega el jugador, actualiza en base a eso
+        if(self.iPlay):
+            userInput = pygame.key.get_pressed()
+            userInput = [userInput[pygame.K_UP], userInput[pygame.K_DOWN], userInput[pygame.K_RIGHT]]
+
+            for idx in self.idxLive[self.idxBoolLive]:
+                self.player[idx].updateUserInput(userInput)
+                self.player[idx].update()
         
-        # for dino in self.player:
-        #     dino.update(userInput)
+        # Juega con la neurona
+        else:
+            # Si es el frame de tomar desicion, toma todas las entradas 
+            # de todo los dinos vivos
+            if self.counter == 0:
+                # Es una lista de tuplas (idx, input)
+                neuralInputs = self.getNeuronalInput()
+                
+                for idx, input in neuralInputs:
+                    self.player[idx].updateDecition(input)
+                    self.player[idx].updateNeuralInput()
+                    self.player[idx].update()
+
+            # Simplemente actualiza la grafica
+            else:
+                for idx in self.idxLive[self.idxBoolLive]:
+                    self.player[idx].updateNeuralInput()
+                    self.player[idx].update()
+                
+                # for dino in self.player:
+                #     dino.update(userInput)
 
         return userInput
     
@@ -364,8 +414,7 @@ class Game:
         inputs = []
 
         # Dino x, y 
-        X_POS = 80
-        # Y_POS = 310
+        X_POS = 70
 
         if(len(self.obstacles) > 0):
             # Con getObstacleData sacamos (x, y, ancho, alto) del obstaculo
@@ -396,7 +445,7 @@ class Game:
                      obstacleData[3]
                      ]
 
-            # Guardar las tuplas de inputs
+            # Guardar las tuplas de inputs de dino vivo
             inputs.append((idx, input))
 
         return inputs
@@ -417,9 +466,6 @@ class Game:
         for idx in self.idxLive[self.idxBoolLive]: 
             self.player[idx].draw(SCREEN)
 
-        # for player in self.player: 
-        #     player.draw(SCREEN)
-
         # self.cloud.draw(SCREEN)
         # self.cloud.update()
 
@@ -434,8 +480,9 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.run = False
 
-            #! Dejar aqui por un tiempo, hacer check de las cosas
+            #! Dejar aqui screen.fill para hacer check de las cosas
             SCREEN.fill((255, 255, 255))
+
             self.points += 1
 
             userInput = self.updatePlayer()
@@ -483,7 +530,11 @@ class Game:
 
 # Función que muestra el menú inicial y maneja reinicios
 def menu():
+    #! Parametros principales
     run = True
+    NDINO = 15              # Numero de dino
+    RANDSTART = True        # Empezar en una posicion aleatoria
+    IPLAY = True            # Juega el jugador
 
     SCREEN.fill((255, 255, 255))
     font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 30)
@@ -502,7 +553,7 @@ def menu():
                 run = False
             if event.type == pygame.KEYDOWN:
                 # game = Game()
-                game = Game(nDino=15, randStart=True)
+                game = Game(nDino=NDINO, randStart=RANDSTART, iPlay=IPLAY)
                 points = game.main()
 
                 # Menu de restart

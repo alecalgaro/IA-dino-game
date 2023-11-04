@@ -6,7 +6,7 @@ class Neuron:
         self.Wji = []
 
     # Cargar pesos de redes neuronal 
-    def loadNeuralWeight(self, structure):
+    def loadNeuralWeight(self, link, structure) -> None:
         """
         Resibe una lista cuyo elementos indican la cantidad 
         de neuronas de cada capas.
@@ -14,12 +14,12 @@ class Neuron:
         """
         skipRow = 0
         for nRow in structure:
-            layerWeight = pd.read_csv('neurWeightMLP.csv', delimiter=',', 
+            layerWeight = pd.read_csv(link, delimiter=',', 
                                       header=None, skiprows=skipRow, nrows=nRow)
             skipRow += nRow
             self.Wji.append(layerWeight.to_numpy())
     
-    def initNeuralWeight(self, structure):
+    def initNeuralWeight(self, structure) -> None:
         """
         Inicializacion aleatoria de los pesos en el rango [-0.5, 0.5]
         Asumimos que la capa de entrada cuenta con 5 dimensiones.
@@ -34,7 +34,7 @@ class Neuron:
         Y = 2/(1 + np.exp(-alpha * Vi)) - 1
         return Y
 
-    def forwardPropagation(self, Xi, alpha):
+    def forwardPropagation(self, Xi, alpha) -> list:
 
         # Concatenar el -1 de bias con el resto de las entradas
         input = np.concatenate([[-1], Xi])
@@ -49,20 +49,30 @@ class Neuron:
 
         return Y
 
-    def getNeuralWeight(self):
+    def setNeuralWeight(self, Wji) -> None:
+        self.Wji = Wji
+
+    def getNeuralWeight(self) -> list:
         return self.Wji
 
 
 #? Test
-import time
-tt = time.time()
-brain = Neuron()
-brain.loadNeuralWeight([10, 5, 5, 3])
-# print(brain.getNeuralWeight())
-print(f"tiempo usado es: {time.time() - tt}")
+# brain = Neuron()
+# #* Cargar peso
+# link = 'neurWeightMLP.csv'
+# brain.loadNeuralWeight(link, [10, 5, 5, 3])
+
+# #* Inicializar pesos aleatorios
+# # brain.initNeuralWeight([10, 5, 5, 3])
+
+# Wji = brain.getNeuralWeight()
+
+# for ww in Wji:
+#     print(ww.shape)
 
 
-Xi = [1,82,300,102,95]
-alpha = 1
-res = brain.forwardPropagation(Xi, alpha) # No tardo nada en terminar el proceso
-print(res)
+#? Forward propagation test
+# Xi = [1,82,300,102,95]
+# alpha = 1
+# res = brain.forwardPropagation(Xi, alpha) # No tardo nada en terminar el proceso
+# print(res)
