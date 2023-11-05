@@ -214,7 +214,7 @@ def entrenamiento_MLP_v2(nombreArchivo, arquitectura, tasaErrorAceptable, numMax
         print("\nCorto por cantidad de epocas (",contEpocas,")")
         print("Error logrado: ", round(tasaErrorActual*100, 2), "%")
     else:
-        print("\nCorto por tasa de error aceptable")
+        print(f"\nCorto por tasa de error aceptable ({round(tasaErrorAceptable * 100, 3)}%)")
         print("Epocas:", contEpocas)
 
     return W_mat    # retorno los pesos entrenados

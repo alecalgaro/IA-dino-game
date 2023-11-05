@@ -59,7 +59,7 @@ class Neuron:
 # brain = Neuron()
 # #* Cargar peso
 # link = 'neurWeightMLP.csv'
-# brain.loadNeuralWeight(link, [10, 5, 5, 3])
+# brain.loadNeuralWeight(link, [5, 3])
 
 # #* Inicializar pesos aleatorios
 # # brain.initNeuralWeight([10, 5, 5, 3])

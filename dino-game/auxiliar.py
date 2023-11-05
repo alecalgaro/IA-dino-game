@@ -174,10 +174,33 @@ import csv
 #     print(type(matrix))
 #     print(matrix.shape[0])
 
-a = np.arange(3)
-b = [-1]
-c = np.concatenate([b, a]) # a y b deben ser al menos 1D, no acepta constante que es 0D
-print(c)
+# a = np.arange(3)
+# b = [-1]
+# c = np.concatenate([b, a]) # a y b deben ser al menos 1D, no acepta constante que es 0D
+# print(c)
+
+# 0.5165774851012345
+# 0.001
+
+
+Wji = [np.array([
+        [ 0.20086339, -0.17032308, -0.09709814, -0.34608417,  0.01878807, 0.26692764],
+        [ 0.34951064, -0.14537308, -0.51034145,  0.12130056,  0.04974865, 0.35824235],
+        [-0.1001934 ,  0.38867493, -0.2652722 , -0.32913713, -0.15157116, -0.00981034],
+        [ 0.43922338,  0.10524793,  0.46903157, -0.46113214, -0.08514374, 0.09651354],
+        [ 0.46278005,  0.03152608, -0.11888204, -0.18585248, -0.33613728, -0.16309973]
+        ]), 
+    np.array([
+        [-0.26772695,  0.19257835,  0.22187682, -0.41641781, -0.35356841, -0.08471307],
+        [-0.25723259,  0.21676135, -0.20902567,  0.10298885,  0.31517318, -0.19743511],
+        [ 0.06580563,  0.30122432, -0.04365628, -0.22473899, -0.37062099, 0.22058742]
+        ])]
+
+
+with open("neurWeightMLP.csv", 'w') as file:
+    for weight in Wji:
+        np.savetxt(file, weight, delimiter=',')
+
 
 #! Tiene problema
 # data = np.genfromtxt('dataSetAux.csv', delimiter=',')

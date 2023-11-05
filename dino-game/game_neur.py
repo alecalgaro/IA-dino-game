@@ -51,7 +51,7 @@ class Dinosaur:
     JUMP_VEL = 8
     GRAVITY = 0.6
 
-    def __init__(self, randStart = False, iPlay = True):
+    def __init__(self, randStart = False, iPlay = True, initDinoBrain = False):
         self.duck_img = DUCKING
         self.run_img = RUNNING
         self.jump_img = JUMPING
@@ -77,13 +77,15 @@ class Dinosaur:
         # Armo su celebro si NO juego yo
         #? Estructura de la neurona, HAY QUE ACLARAR AQUI
         if(not(iPlay)):
-            #* Cargar pesos 
-            # link = 'neurWeightMLP.csv'
-            # structure = [10, 5, 5, 3]
-            # self.brain.loadNeuralWeight(link, structure)
+            structure = [5, 3]
 
-            #* Inicializar los pesos en el rango [-0.5, 0.5]
-            self.brain.initNeuralWeight()
+            if(initDinoBrain):
+                #* Inicializar los pesos en el rango [-0.5, 0.5]
+                self.brain.initNeuralWeight(structure)
+            else:
+                #* Cargar pesos 
+                link = 'neurWeightMLP.csv'
+                self.brain.loadNeuralWeight(link, structure)
 
     #? =================[Actualizar en base a decision de neurona o del jugador]=================
 
@@ -247,14 +249,14 @@ class Game:
 
     #* ==================[Constructor, inicializacion]==================
 
-    def __init__(self, nDino = 1, randStart=False, iPlay=True) :
+    def __init__(self, nDino = 1, randStart=False, iPlay=True, initDinoBrain=False) :
         self.run = True
         self.iPlay = iPlay #? Juega el juador, sino ignora sus inputs
 
         # Parametros para dino
         self.player = []
         for _ in range(nDino):
-            self.player.append(Dinosaur(randStart, iPlay))
+            self.player.append(Dinosaur(randStart, iPlay, initDinoBrain))
 
         self.numLive = nDino
         self.idxLive = np.arange(nDino)
@@ -390,7 +392,7 @@ class Game:
                 neuralInputs = self.getNeuronalInput()
                 
                 for idx, input in neuralInputs:
-                    self.player[idx].updateDecition(input)
+                    self.player[idx].updateDecision(input)
                     self.player[idx].updateNeuralInput()
                     self.player[idx].update()
 
@@ -486,24 +488,24 @@ class Game:
 
             self.collision()
 
-            #! Generar data set aux para agregarlo en el data set 
-            if(userInput[0] or userInput[1] or userInput[2]):
-                input = self.getNeuronalInput()
-                if(len(input) > 0):
-                    dataSet = np.concatenate([input[0][1], userInput])[np.newaxis]
+            # #! Generar data set aux para agregarlo en el data set 
+            # if(userInput[0] or userInput[1] or userInput[2]):
+            #     input = self.getNeuronalInput()
+            #     if(len(input) > 0):
+            #         dataSet = np.concatenate([input[0][1], userInput])[np.newaxis]
 
-                    #* Guardar datos en un archivo auxiliar
-                    with open("dataSetAux.csv", 'a') as auxFile:
-                      np.savetxt(auxFile, dataSet, delimiter=',')
-                    # np.savetxt('dataSetAux.csv', dataSet, delimiter=',')
+            #         #* Guardar datos en un archivo auxiliar
+            #         with open("dataSetAux.csv", 'a') as auxFile:
+            #           np.savetxt(auxFile, dataSet, delimiter=',')
+            #         # np.savetxt('dataSetAux.csv', dataSet, delimiter=',')
 
-            #! Actualizar el data set para entrenar MLP
-            if(outScreen):
-                with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
-                    content = source_file.read()
-                    target_file.write(content)
-                with open("dataSetAux.csv", 'w') as file:
-                    file.truncate()
+            # #! Actualizar el data set para entrenar MLP
+            # if(outScreen):
+            #     with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
+            #         content = source_file.read()
+            #         target_file.write(content)
+            #     with open("dataSetAux.csv", 'w') as file:
+            #         file.truncate()
 
             #* Check dino vivo, sino sale del juego
             if self.numLive == 0:
@@ -526,9 +528,13 @@ class Game:
 def menu():
     #! Parametros principales
     run = True
-    NDINO = 1              # Numero de dinos
-    RANDSTART = False        # Empezar en una posicion aleatoria
-    IPLAY = True            # Juega el jugador
+
+    IPLAY = False           # Juega el jugador
+    NDINO = 50               # Numero de dinos
+    RANDSTART = False       # Empezar en una posicion aleatoria
+    INITDINOBRAIN = True   #! Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+
+
 
     SCREEN.fill((255, 255, 255))
     font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 30)
@@ -547,7 +553,7 @@ def menu():
                 run = False
             if event.type == pygame.KEYDOWN:
                 # game = Game()
-                game = Game(nDino=NDINO, randStart=RANDSTART, iPlay=IPLAY)
+                game = Game(nDino=NDINO, randStart=RANDSTART, iPlay=IPLAY, initDinoBrain=INITDINOBRAIN)
                 points = game.main()
 
                 # Menu de restart
