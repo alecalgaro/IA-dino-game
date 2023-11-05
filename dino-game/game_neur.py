@@ -543,11 +543,11 @@ def menu():
     IPLAY = False           # Juega el jugador
 
     # Configuracion de dino
-    N_DINO = 50               # Numero de dinos
-    RAND_START = True       # Empezar en una posicion aleatoria
+    N_DINO = 1               # Numero de dinos
+    RAND_START = False       # Empezar en una posicion aleatoria
     
     # Parametros de algoritmo genetico
-    GENETIC = True
+    GENETIC = False
     INIT_DINO_BRAIN = True   #! Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
     
     # Estructura de la red neuronal
