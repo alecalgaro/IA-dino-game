@@ -583,7 +583,6 @@ def menu():
 
                 restart_menu(points)
 
-
 def start_menu():
     SCREEN.fill((255, 255, 255))
     font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 30)
