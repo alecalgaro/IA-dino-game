@@ -51,7 +51,8 @@ class Dinosaur:
     JUMP_VEL = 8
     GRAVITY = 0.6
 
-    def __init__(self, randStart = False, iPlay = True, initDinoBrain = False):
+    def __init__(self, randStart = False, iPlay = True, initDinoBrain = False,
+                 genetic=False, structure=[], idxBrain=0):
         self.duck_img = DUCKING
         self.run_img = RUNNING
         self.jump_img = JUMPING
@@ -79,9 +80,17 @@ class Dinosaur:
         if(not(iPlay)):
             structure = [5, 3]
 
-            if(initDinoBrain):
-                #* Inicializar los pesos en el rango [-0.5, 0.5]
-                self.brain.initNeuralWeight(structure)
+            # Si usa algoritmo genetico, admite inicializacion aleatoria 
+            #! y rehace todo initDinoBrain = True
+            # Sino simplemente arma su celebro en base a los datos de poblacion
+            if(genetic):
+                if(initDinoBrain):
+                    #* Inicializar los pesos en el rango [-0.5, 0.5]
+                    self.brain.initNeuralWeight(structure)
+                else:
+                    link = 'dino-game/GENETIC/dinoBrain'+ str(idxBrain) + '.csv'
+                    self.brain.loadNeuralWeight(link, structure)
+
             else:
                 #* Cargar pesos 
                 link = 'neurWeightMLP.csv'
@@ -249,14 +258,16 @@ class Game:
 
     #* ==================[Constructor, inicializacion]==================
 
-    def __init__(self, nDino = 1, randStart=False, iPlay=True, initDinoBrain=False) :
+    def __init__(self, nDino = 1, randStart=False, iPlay=True, 
+                 initDinoBrain=False, genetic=False, structure=[]) :
         self.run = True
         self.iPlay = iPlay #? Juega el juador, sino ignora sus inputs
 
         # Parametros para dino
         self.player = []
-        for _ in range(nDino):
-            self.player.append(Dinosaur(randStart, iPlay, initDinoBrain))
+        for idx in range(nDino):
+            self.player.append(Dinosaur(randStart, iPlay, initDinoBrain, genetic,
+                                        structure=structure, idxBrain=idx))
 
         self.numLive = nDino
         self.idxLive = np.arange(nDino)
@@ -530,12 +541,36 @@ def menu():
     run = True
 
     IPLAY = False           # Juega el jugador
-    NDINO = 50               # Numero de dinos
-    RANDSTART = False       # Empezar en una posicion aleatoria
-    INITDINOBRAIN = True   #! Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+
+    # Configuracion de dino
+    N_DINO = 50               # Numero de dinos
+    RAND_START = True       # Empezar en una posicion aleatoria
+    
+    # Parametros de algoritmo genetico
+    GENETIC = True
+    INIT_DINO_BRAIN = True   #! Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+    
+    # Estructura de la red neuronal
+    NEURAL_STRUCTURE = [5, 3]
+
+    start_menu()
+
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.KEYDOWN:
+                # game = Game()
+                game = Game(nDino=N_DINO, randStart=RAND_START, iPlay=IPLAY,
+                            initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, structure=NEURAL_STRUCTURE)
+                points = game.main()
+            
+                # INIT_DINO_BRAIN = False
+
+                restart_menu(points)
 
 
-
+def start_menu():
     SCREEN.fill((255, 255, 255))
     font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 30)
 
@@ -547,27 +582,19 @@ def menu():
     SCREEN.blit(RUNNING[0], (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
     pygame.display.update()
 
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            if event.type == pygame.KEYDOWN:
-                # game = Game()
-                game = Game(nDino=NDINO, randStart=RANDSTART, iPlay=IPLAY, initDinoBrain=INITDINOBRAIN)
-                points = game.main()
-
-                # Menu de restart
-                SCREEN.fill((255, 255, 255))
-                font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 30)
-                text = font.render("Press any Key to Restart", True, (0, 0, 0))
-                score = font.render("Your Score: " + str(points), True, (0, 0, 0))
-                scoreRect = score.get_rect()
-                scoreRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50)
-                SCREEN.blit(score, scoreRect)
-                textRect = text.get_rect()
-                textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-                SCREEN.blit(text, textRect)
-                SCREEN.blit(RUNNING[0], (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
-                pygame.display.update()
+def restart_menu(points):
+    # Menu de restart
+    SCREEN.fill((255, 255, 255))
+    font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 30)
+    text = font.render("Press any Key to Restart", True, (0, 0, 0))
+    score = font.render("Your Score: " + str(points), True, (0, 0, 0))
+    scoreRect = score.get_rect()
+    scoreRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50)
+    SCREEN.blit(score, scoreRect)
+    textRect = text.get_rect()
+    textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+    SCREEN.blit(text, textRect)
+    SCREEN.blit(RUNNING[0], (SCREEN_WIDTH // 2 - 20, SCREEN_HEIGHT // 2 - 140))
+    pygame.display.update()
 
 menu()
