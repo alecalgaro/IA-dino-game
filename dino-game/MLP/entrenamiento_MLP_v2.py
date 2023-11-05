@@ -3,7 +3,7 @@ from cargarDatos import *
 from sigmoidea import *
 from winnerTakesAll import *
 
-def entrenamiento_MLP(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpocas,  
+def entrenamiento_MLP_v2(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpocas,  
                       gamma, bSigmoidea=1):
     """
     Algoritmo de entrenamiento del perceptron multicapa.
@@ -192,8 +192,6 @@ def entrenamiento_MLP(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpo
             #     print(aa)
             #     print(Yd[i])
             #     print("")
-
-
 
             EC = np.sum(np.power(Yd[i]-Y_vec[-1], 2))
 

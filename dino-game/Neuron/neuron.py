@@ -8,8 +8,7 @@ class Neuron:
     # Cargar pesos de redes neuronal 
     def loadNeuralWeight(self, link, structure) -> None:
         """
-        Resibe una lista cuyo elementos indican la cantidad 
-        de neuronas de cada capas.
+        Recibe una lista cuyos elementos indican la cantidad de neuronas de cada capa.
         La lista NO incluye a la capa de entrada.
         """
         skipRow = 0

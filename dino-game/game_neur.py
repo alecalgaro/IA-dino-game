@@ -60,7 +60,6 @@ class Dinosaur:
         self.dino_run = True
         self.dino_jump = False
 
-
         self.step_index = 0
         self.jump_vel = self.JUMP_VEL
         self.image = self.run_img[0]
@@ -70,7 +69,7 @@ class Dinosaur:
         self.dino_rect.x = self.X_POS + self.randN
         self.dino_rect.y = self.Y_POS
 
-        #? Inicializar el "celebro" del dino y empieze caminando
+        #? Inicializar el "cerebro" del dino y que empiece caminando
         self.brain = Neuron()
         self.decision = [False, False, True]
         self.alpha = 1
@@ -86,8 +85,7 @@ class Dinosaur:
             #* Inicializar los pesos en el rango [-0.5, 0.5]
             self.brain.initNeuralWeight()
 
-    
-    #? =================[Actualizar en base a desicion de neurona o del jugador]=================
+    #? =================[Actualizar en base a decision de neurona o del jugador]=================
 
     def updateDecision(self, neuralInput):
         self.decision = self.brain.forwardPropagation(neuralInput, self.alpha)
@@ -332,7 +330,6 @@ class Game:
 
         return out
 
-
     #? ========================[Collision]========================
     def collision(self):
         
@@ -356,7 +353,6 @@ class Game:
         #? Hitbox
         pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(obstacle_collision_rect))
 
-        
         # Recorrer cada dino y verificar si esta en colision
         for idx in self.idxLive[self.idxBoolLive]:
             player = self.player[idx]
@@ -426,7 +422,8 @@ class Game:
         if (obstacleData[0] + obstacleData[3] < X_POS) and len(self.obstacles) > 1:
             obstacleData = self.obstacles[1].getObstacleData()
 
-        dist_norm = (X_POS - obstacleData[0])/self.game_speed
+        # Normalizamos para tener distancia al obstaculo / velocidad del juego
+        dist_norm = (obstacleData[0] - X_POS)/self.game_speed   
         
         # for player in self.player:
         for idx in self.idxLive[self.idxBoolLive]:
@@ -438,11 +435,11 @@ class Game:
             # ancho_obstaculo
             # alto_obstaculo
             # ]
-            input = [dist_norm,
-                     player.getDinoData(), 
-                     obstacleData[1],
-                     obstacleData[2],
-                     obstacleData[3]
+            input = [dist_norm,             # distancia/velocidad
+                     player.getDinoData(),  # Y_DINO
+                     obstacleData[1],       # Y_Obstaculo
+                     obstacleData[2],       # ancho_obstaculo
+                     obstacleData[3]        # alto_obstaculo
                      ]
 
             # Guardar las tuplas de inputs de dino vivo
@@ -450,7 +447,6 @@ class Game:
 
         return inputs
 
-    
     #! ======================[DIBUJAR TODO]======================
     def updateScreen(self):
         #! Aqui deberia estar el screen.fill
@@ -472,7 +468,6 @@ class Game:
         self.CLOCK.tick(50)
         pygame.display.update()
     
-
     def main(self):
 
         while self.run:
@@ -491,25 +486,24 @@ class Game:
 
             self.collision()
 
-            # #! Generar data set aux para agregarlo en el data set 
-            # if(userInput[0] or userInput[1] or userInput[2]):
-            #     input = self.getNeuronalInput()
-            #     if(len(input) > 0):
-            #         dataSet = np.concatenate([input[0][1], userInput])[np.newaxis]
+            #! Generar data set aux para agregarlo en el data set 
+            if(userInput[0] or userInput[1] or userInput[2]):
+                input = self.getNeuronalInput()
+                if(len(input) > 0):
+                    dataSet = np.concatenate([input[0][1], userInput])[np.newaxis]
 
-            #         #* Guardar datos en un archivo auxiliar
-            #         with open("dataSetAux.csv", 'a') as auxFile:
-            #           np.savetxt(auxFile, dataSet, delimiter=',')
-            #         # np.savetxt('dataSetAux.csv', dataSet, delimiter=',')
+                    #* Guardar datos en un archivo auxiliar
+                    with open("dataSetAux.csv", 'a') as auxFile:
+                      np.savetxt(auxFile, dataSet, delimiter=',')
+                    # np.savetxt('dataSetAux.csv', dataSet, delimiter=',')
 
-            # #! Actualizar el data set para entrenar MLP
-            # if(outScreen):
-            #     with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
-            #         content = source_file.read()
-            #         target_file.write(content)
-            #     with open("dataSetAux.csv", 'w') as file:
-            #         file.truncate()
-
+            #! Actualizar el data set para entrenar MLP
+            if(outScreen):
+                with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
+                    content = source_file.read()
+                    target_file.write(content)
+                with open("dataSetAux.csv", 'w') as file:
+                    file.truncate()
 
             #* Check dino vivo, sino sale del juego
             if self.numLive == 0:
@@ -532,8 +526,8 @@ class Game:
 def menu():
     #! Parametros principales
     run = True
-    NDINO = 15              # Numero de dino
-    RANDSTART = True        # Empezar en una posicion aleatoria
+    NDINO = 1              # Numero de dinos
+    RANDSTART = False        # Empezar en una posicion aleatoria
     IPLAY = True            # Juega el jugador
 
     SCREEN.fill((255, 255, 255))

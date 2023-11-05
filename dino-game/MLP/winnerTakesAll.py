@@ -11,7 +11,8 @@ def winnerTakesAll(Y_vec):
     y_mayor = np.max(Y_vec[-1])   # busco la salida mayor
     indice_y_mayor = np.where(Y_vec[-1] == y_mayor)[0][0]   # busco el indice de esa salida
     # np.where busca las coincidencias dentro del array y luego accedo a la primera [0][0] que encuentra
-    newY = -1 * np.ones(len(Y_vec[-1]))     # creo un vector con 1s y multiplico por -1, del mismo tamano que Y_vec[-1]
+    # newY = -1 * np.ones(len(Y_vec[-1]))     # creo un vector con 1s y multiplico por -1, del mismo tamano que Y_vec[-1]
+    newY = np.zeros(len(Y_vec[-1]))
     newY[indice_y_mayor] = 1    # coloco un 1 solo en la posicion de la salida mayor
 
     return newY     

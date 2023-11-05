@@ -1,15 +1,15 @@
 import numpy as np
-from entrenamiento_MLP import *
+from entrenamiento_MLP_v1 import *
+from entrenamiento_MLP_v2 import *
 
 nombreArchivo = 'dataSet.csv'
-arquitectura = [10, 5, 5, 3]
-tasaErrorAceptable = 0.1
-numMaxEpocas = 550
-gammab = 0.018
-bSigm = 15
+arquitectura = [5, 3]
+tasaErrorAceptable = 0.05
+numMaxEpocas = 500
+gammab = 0.01
+bSigm = 5
 
-
-Wji = entrenamiento_MLP(nombreArchivo, 
+Wji = entrenamiento_MLP_v1(nombreArchivo, 
                         arquitectura, 
                         tasaErrorAceptable, 
                         numMaxEpocas,
