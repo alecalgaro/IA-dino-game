@@ -18,6 +18,6 @@ Wji = entrenamiento_MLP_v2(nombreArchivo,
 
 print(Wji)
 
-# with open("neurWeightMLP.csv", 'w') as file:
-#     for weight in Wji:
-#         np.savetxt(file, weight, delimiter=',')
+with open("neurWeightMLP.csv", 'w') as file:
+    for weight in Wji:
+        np.savetxt(file, weight, delimiter=',')

@@ -160,11 +160,17 @@ def entrenamiento_MLP_v2(nombreArchivo, arquitectura, tasaErrorAceptable, numMax
                 W_mat[k] += dW      # actualizo los pesos
 
         #* --- Etapa de validacion ---
+        
+        #! Cargar datos de validacion
+        (XX, YYd) = cargarDatos('dataSetValidation.csv', arquitectura[-1])
+        
+        cantPatrones = np.size(XX, 0)    # cantidad de patrones (filas)
         contErrores = 0
         errorProm = 0
+        
         for i in range(cantPatrones):    
             # Capa inicial
-            v1 = np.matmul(W_mat[0], X[i])
+            v1 = np.matmul(W_mat[0], XX[i])
             Y_vec[0][0] = -1    # agrego -1 en la primera columna para el sesgo
             Y_vec[0][1:] = sigmoidea(v1, bSigmoidea)
 
@@ -182,7 +188,7 @@ def entrenamiento_MLP_v2(nombreArchivo, arquitectura, tasaErrorAceptable, numMax
             # # .all() comprueba que todos sean True, entonces si no son todos True cuento un error 
             # contErrores += 1 if ((newY == Yd[i]).all()) == False else 0   
 
-            contErrores += np.argmax(Y_vec[-1]) != np.argmax(Yd[i])
+            contErrores += np.argmax(Y_vec[-1]) != np.argmax(YYd[i])
 
             # if i % 5 == 0:
             #     aa = np.zeros_like(Y_vec[-1])
@@ -193,7 +199,7 @@ def entrenamiento_MLP_v2(nombreArchivo, arquitectura, tasaErrorAceptable, numMax
             #     print(Yd[i])
             #     print("")
 
-            EC = np.sum(np.power(Yd[i]-Y_vec[-1], 2))
+            EC = np.sum(np.power(YYd[i]-Y_vec[-1], 2))
 
             errorProm += EC
 

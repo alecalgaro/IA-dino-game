@@ -52,7 +52,7 @@ class Dinosaur:
     GRAVITY = 0.6
 
     def __init__(self, randStart = False, iPlay = True, initDinoBrain = False,
-                 genetic=False, structure=[], idxBrain=0):
+                 genetic=False, structure=[], bSigm=1, idxBrain=0):
         self.duck_img = DUCKING
         self.run_img = RUNNING
         self.jump_img = JUMPING
@@ -73,12 +73,11 @@ class Dinosaur:
         #? Inicializar el "cerebro" del dino y que empiece caminando
         self.brain = Neuron()
         self.decision = [False, False, True]
-        self.alpha = 1
+        self.alpha = bSigm
 
         # Armo su celebro si NO juego yo
         #? Estructura de la neurona, HAY QUE ACLARAR AQUI
         if(not(iPlay)):
-            structure = [5, 3]
 
             # Si usa algoritmo genetico, admite inicializacion aleatoria 
             #! y rehace todo initDinoBrain = True
@@ -107,31 +106,45 @@ class Dinosaur:
     def updateUserInput(self, userInput):
 
         #* Cuando juegue la red neuronal habria que simular que presiona estas teclas
+        #! si presiona para saltar y no esta saltando
         if userInput[0] and not self.dino_jump:
             self.dino_duck = False
             self.dino_run = False
             self.dino_jump = True
+            print("Saltar")
+
+        #! si presiona para saltar y esta agachado (LO AGREGUE NUEVO)
+        # elif userInput[0] and self.dino_duck:
+        #     self.dino_duck = False
+        #     self.dino_run = False
+        #     self.dino_jump = True
 
         #? Bajar rapido
         elif userInput[1] and self.dino_jump:
             self.jump_vel -= 2
+            print("Bajar rápido")
 
+        #! si presiona para agacharse y no esta saltando
         elif userInput[1] and not self.dino_jump:
             self.dino_duck = True
             self.dino_run = False
             self.dino_jump = False
-        elif not (self.dino_jump or userInput[1]):
+            print("Agacharse")
+        
+        #! si no esta saltando ni presionando para agacharse o saltar
+        elif not (self.dino_jump or userInput[0] or userInput[1]):
             self.dino_duck = False
             self.dino_run = True
             self.dino_jump = False
+            print("Correr")
 
     def update(self):
-        if self.dino_duck:
-            self.duck()
         if self.dino_run:
             self.run()
         if self.dino_jump:
             self.jump()
+        if self.dino_duck:
+            self.duck()
 
         if self.step_index >= 10:
             self.step_index = 0
@@ -259,7 +272,7 @@ class Game:
     #* ==================[Constructor, inicializacion]==================
 
     def __init__(self, nDino = 1, randStart=False, iPlay=True, 
-                 initDinoBrain=False, genetic=False, structure=[]) :
+                 initDinoBrain=False, genetic=False, structure=[], bSigm=1) :
         self.run = True
         self.iPlay = iPlay #? Juega el juador, sino ignora sus inputs
 
@@ -267,7 +280,7 @@ class Game:
         self.player = []
         for idx in range(nDino):
             self.player.append(Dinosaur(randStart, iPlay, initDinoBrain, genetic,
-                                        structure=structure, idxBrain=idx))
+                                        structure=structure, bSigm=bSigm, idxBrain=idx))
 
         self.numLive = nDino
         self.idxLive = np.arange(nDino)
@@ -540,7 +553,7 @@ def menu():
     #! Parametros principales
     run = True
 
-    IPLAY = False           # Juega el jugador
+    IPLAY = False           #* Juega el jugador
 
     # Configuracion de dino
     N_DINO = 1               # Numero de dinos
@@ -551,6 +564,7 @@ def menu():
     INIT_DINO_BRAIN = True   #! Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
     
     # Estructura de la red neuronal
+    bSigm = 5
     NEURAL_STRUCTURE = [5, 3]
 
     start_menu()
@@ -562,7 +576,7 @@ def menu():
             if event.type == pygame.KEYDOWN:
                 # game = Game()
                 game = Game(nDino=N_DINO, randStart=RAND_START, iPlay=IPLAY,
-                            initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, structure=NEURAL_STRUCTURE)
+                            initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, structure=NEURAL_STRUCTURE, bSigm=bSigm)
                 points = game.main()
             
                 # INIT_DINO_BRAIN = False
