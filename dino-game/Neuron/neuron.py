@@ -72,6 +72,7 @@ class Neuron:
 
 #? Forward propagation test
 # Xi = [1,82,300,102,95]
-# alpha = 1
-# res = brain.forwardPropagation(Xi, alpha) # No tardo nada en terminar el proceso
+# Xi = [2.682203389830511497e+01,3.100000000000000000e+02,3.000000000000000000e+02,4.800000000000000000e+01,9.500000000000000000e+01]
+# alpha = 5
+# res = brain.forwardPropagation(Xi, alpha)
 # print(res)

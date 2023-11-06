@@ -3,7 +3,7 @@ from cargarDatos import *
 from sigmoidea import *
 from winnerTakesAll import *
 
-def entrenamiento_MLP_v2(nombreArchivo, arquitectura, tasaErrorAceptable, numMaxEpocas,  
+def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErrorAceptable, numMaxEpocas,  
                       gamma, bSigmoidea=1):
     """
     Algoritmo de entrenamiento del perceptron multicapa.
@@ -16,7 +16,7 @@ def entrenamiento_MLP_v2(nombreArchivo, arquitectura, tasaErrorAceptable, numMax
     print("\n--- Comenzando entrenamiento MLP ---")
 
     # Cargar los datos
-    (X, Yd) = cargarDatos(nombreArchivo, arquitectura[-1])
+    (X, Yd) = cargarDatos(archivoTrain, arquitectura[-1])
 
     #* ----- Inicializar variables a utilizar -----
 
@@ -161,8 +161,8 @@ def entrenamiento_MLP_v2(nombreArchivo, arquitectura, tasaErrorAceptable, numMax
 
         #* --- Etapa de validacion ---
         
-        #! Cargar datos de validacion
-        (XX, YYd) = cargarDatos('dataSetValidation.csv', arquitectura[-1])
+        # Cargar datos de validacion
+        (XX, YYd) = cargarDatos(archivoValidation, arquitectura[-1])
         
         cantPatrones = np.size(XX, 0)    # cantidad de patrones (filas)
         contErrores = 0
