@@ -75,6 +75,9 @@ class Dinosaur:
         self.decision = [False, False, True]
         self.alpha = bSigm
 
+        #? Truco, promocionar aquel dino que realiza varias acciones
+        self.promosion = 0
+
         # Armo su celebro si NO juego yo
         #? Estructura de la neurona, HAY QUE ACLARAR AQUI
         if(not(iPlay)):
@@ -98,7 +101,17 @@ class Dinosaur:
     #? =================[Actualizar en base a decision de neurona o del jugador]=================
 
     def updateDecision(self, neuralInput):
+        # decisionPrev = np.argmax(self.decision)
+
         self.decision = self.brain.forwardPropagation(neuralInput, self.alpha)
+
+        #! Ver si llega a ser necesario
+        #? Cuando realiza diversas acciones distintas, lo promosiono
+        #? para superar aquel que saca mayor punto por mantener presionado
+        #? una sola tecla
+        # if(decisionPrev != np.argmax(self.decision)):
+        #     self.promosion += 20
+        
 
     def updateNeuralInput(self):
         self.updateUserInput(self.decision)
@@ -122,7 +135,7 @@ class Dinosaur:
         #? Bajar rapido
         elif userInput[1] and self.dino_jump:
             self.jump_vel -= 2
-            print("Bajar rápido")
+            print("Bajar rapido")
 
         #! si presiona para agacharse y no esta saltando
         elif userInput[1] and not self.dino_jump:
@@ -152,6 +165,13 @@ class Dinosaur:
     #* Necesitamos solo su eje y
     def getDinoData(self):
         return (self.dino_rect.y)
+    
+    # Devolver su celebro, pesos sinapticos
+    def getDinoBrain(self):
+        return self.brain.getNeuralWeight()
+    
+    def getDinoPromosion(self):
+        return self.promosion
 
 #? =================================[Estados del Dino]=================================
     def duck(self):
@@ -266,7 +286,7 @@ class Game:
     FONT = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
     X_POS_BG = 0
     Y_POS_BG = 380
-    VEL_CHECK = 220
+    VEL_CHECK = 200
     MAX_SPEED = 80
 
     #* ==================[Constructor, inicializacion]==================
@@ -391,7 +411,7 @@ class Game:
             if dino_collision_rect.colliderect(obstacle_collision_rect):
                 self.numLive -= 1
                 self.idxBoolLive[idx] = False
-                self.registPoints.append((idx, self.points))
+                self.registPoints.append((self.points, player.getDinoBrain()))
 
     #? ========================[Player]========================
     def updatePlayer(self):
@@ -545,7 +565,7 @@ class Game:
             #! Dibujar todo
             self.updateScreen()
 
-        return self.points
+        return self.registPoints
                 
 
 # Función que muestra el menú inicial y maneja reinicios
@@ -556,12 +576,13 @@ def menu():
     IPLAY = False           #* Juega el jugador
 
     # Configuracion de dino
-    N_DINO = 1               # Numero de dinos
+    N_DINO = 50               # Numero de dinos
     RAND_START = False       # Empezar en una posicion aleatoria
     
     # Parametros de algoritmo genetico
-    GENETIC = False
+    GENETIC = True
     INIT_DINO_BRAIN = True   #! Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+    UPDATE_POPULATION = True #! Actualizar la poblacion por medio de mutacion y cruza
     
     # Estructura de la red neuronal
     bSigm = 5
@@ -577,7 +598,8 @@ def menu():
                 # game = Game()
                 game = Game(nDino=N_DINO, randStart=RAND_START, iPlay=IPLAY,
                             initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, structure=NEURAL_STRUCTURE, bSigm=bSigm)
-                points = game.main()
+                dataPopulation = game.main()
+                points = dataPopulation[-1][0]
             
                 # INIT_DINO_BRAIN = False
 
