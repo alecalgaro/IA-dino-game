@@ -124,7 +124,7 @@ class Dinosaur:
             self.dino_duck = False
             self.dino_run = False
             self.dino_jump = True
-            print("Saltar")
+            # print("Saltar")
 
         #! si presiona para saltar y esta agachado (LO AGREGUE NUEVO)
         # elif userInput[0] and self.dino_duck:
@@ -135,21 +135,21 @@ class Dinosaur:
         #? Bajar rapido
         elif userInput[1] and self.dino_jump:
             self.jump_vel -= 2
-            print("Bajar rapido")
+            # print("Bajar rapido")
 
         #! si presiona para agacharse y no esta saltando
         elif userInput[1] and not self.dino_jump:
             self.dino_duck = True
             self.dino_run = False
             self.dino_jump = False
-            print("Agacharse")
+            # print("Agacharse")
         
         #! si no esta saltando ni presionando para agacharse o saltar
         elif not (self.dino_jump or userInput[0] or userInput[1]):
             self.dino_duck = False
             self.dino_run = True
             self.dino_jump = False
-            print("Correr")
+            # print("Correr")
 
     def update(self):
         if self.dino_run:
