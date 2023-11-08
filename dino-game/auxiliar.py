@@ -183,7 +183,16 @@ import csv
 # 0.5165774851012345
 # 0.001
 
-#todo ==================[Comparar 2 listas booleanas]==================
+#todo ==================[bla]==================
+
+x = (12, 14)
+y = (10, 10)
+z = (5, 50)
+li = [x, y, z]
+for a, b in li:
+    print(a)
+    print(b)
+    print("hola")
 
 
 #todo ==================[Probar rango de mutacion]==================
