@@ -122,7 +122,7 @@ class Dinosaur:
         #? Bajar rapido
         elif userInput[1] and self.dino_jump:
             self.jump_vel -= 2
-            print("Bajar rápido")
+            print("Bajar rapido")
 
         #! si presiona para agacharse y no esta saltando
         elif userInput[1] and not self.dino_jump:
@@ -445,11 +445,13 @@ class Game:
             return inputs
 
         # Si el primer obstaculo ya paso donde esta dino, chequeo con el siguiente (cuando existe)
+        #! ¿ No seria obstacleData[0] + obstacleData[2] ?
         if (obstacleData[0] + obstacleData[3] < X_POS) and len(self.obstacles) > 1:
             obstacleData = self.obstacles[1].getObstacleData()
 
         # Normalizamos para tener distancia al obstaculo / velocidad del juego
-        dist_norm = (obstacleData[0] - X_POS)/self.game_speed   
+        dist = obstacleData[0] - X_POS
+        dist_norm = dist/self.game_speed   
         
         # for player in self.player:
         for idx in self.idxLive[self.idxBoolLive]:
@@ -461,7 +463,9 @@ class Game:
             # ancho_obstaculo
             # alto_obstaculo
             # ]
-            input = [dist_norm,             # distancia/velocidad
+            #! RECORDAR QUE USE SOLOS dist Y NO dist/vel COMO ANTES
+            #! PROBAR AGREGAR TAMBIEN LA VELOCIDAD COMO OTRA ENTRADA Y VER SI MEJORA O NO
+            input = [dist,             # distancia/velocidad
                      player.getDinoData(),  # Y_DINO
                      obstacleData[1],       # Y_Obstaculo
                      obstacleData[2],       # ancho_obstaculo

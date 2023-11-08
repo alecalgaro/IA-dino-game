@@ -7,7 +7,7 @@ archivoValidation = 'dataSetValidation.csv'
 arquitectura = [5, 3]
 tasaErrorAceptable = 0.01
 numMaxEpocas = 1000
-gammab = 0.01
+gammab = 0.005
 bSigm = 5
 
 Wji = entrenamiento_MLP_v2(archivoTrain, 
