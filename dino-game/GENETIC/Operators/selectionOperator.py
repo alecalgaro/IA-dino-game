@@ -1,13 +1,11 @@
 import numpy as np
 
-def window(dataPopulation, numParent):
+def window(dataPopulation, numParent, replace=False):
     """
     Recibe los datos de la poblacion, almacenado como un conjunto 
     tuplas [(puntaje, redesNeuronal) * n].
     Lo bueno es que ya viene ordenado
     """
-    #! Tenemos que determinar si admite repeticion o no
-    #! Por el momento SI admite 
 
     parent = []
     numIndiv = len(dataPopulation)
@@ -16,6 +14,7 @@ def window(dataPopulation, numParent):
         numParent = int(numIndiv * numParent)
 
     idxIndiv = np.arange(numIndiv)
+    idxBool = np.full(shape=(numIndiv), fill_value=True, dtype=bool)
     
     # Cantidad a achatar la ventana
     reduceAmount = numIndiv//numParent
@@ -23,13 +22,24 @@ def window(dataPopulation, numParent):
 
     # Coleccionar los indices 
     for _ in range(numParent):
-        idxSelected = np.random.choice(idxIndiv[start:])
+        idxSelected = np.random.choice(idxIndiv[idxBool])
         start += reduceAmount
+
+        # Si NO admite reemplazo, se setea en Falso
+        if not(replace):
+            idxBool[idxSelected] = False
+
+            if(idxSelected >= start):
+                start -= 1
+                while(not(idxBool[start])):
+                    start -= 1
+        
+        idxBool[:start] = False
         parent.append(dataPopulation[idxSelected][1])
     
     return parent
 
-def competition(dataPopulation, numParent):
+def competition(dataPopulation, numParent, replace=False):
     """
     Recibe los datos de la poblacion almacenado como un conjunto 
     tuplas [(puntaje, redesNeuronal) * n].
@@ -42,7 +52,7 @@ def competition(dataPopulation, numParent):
         numParent = int(numIndiv * numParent)
 
     idxIndiv = np.arange(numIndiv)
-    idxBool = np.full(shape=(idxIndiv), fill_value=True, dtype=bool)
+    idxBool = np.full(shape=(numIndiv), fill_value=True, dtype=bool)
     
     # Cantidad de individuos a competir
     competitionAmount = numIndiv//numParent
@@ -51,7 +61,10 @@ def competition(dataPopulation, numParent):
     for _ in range(numParent):
         # Seleccionar n competidores y desactivarlo 
         idxSelected = np.random.choice(idxIndiv[idxBool], size=(competitionAmount), replace=False)
-        idxBool[idxSelected] = False
+
+        # Si NO admite reemplazo, seteo en falso
+        if(not(replace)):
+            idxBool[idxSelected] = False
 
         # Elegir directamente el maximo, ya que sabemos que los datos vienen ordenado
         # Por ejemplo los indices seleccionado son [1, 14, 5, 6, 30], el 30 sera seleccionado
@@ -61,12 +74,11 @@ def competition(dataPopulation, numParent):
     return parent
 
 
-def roulette(dataPopulation, numParent):
+def roulette(dataPopulation, numParent, replace=False):
     """
     Recibe los datos de la poblacion almacenado como un conjunto 
     tuplas [(puntaje, redesNeuronal) * n].
     """
-    #! Admite repeticion o no?
     
     parent = []
     numIndiv = len(dataPopulation)
@@ -87,7 +99,7 @@ def roulette(dataPopulation, numParent):
 
     # Elegir n padres segun la probabilidad
     # Por defecto no admite reemplazo
-    idxParents = np.random.choice(idxIndiv, size=(numParent), p=probabilities, replace=False)
+    idxParents = np.random.choice(idxIndiv, size=(numParent), p=probabilities, replace=replace)
 
     for idx in idxParents:
         parent.append(dataPopulation[idx][1])
@@ -95,3 +107,13 @@ def roulette(dataPopulation, numParent):
     return parent
 
 
+#? Test operator
+
+datas = [(i, i) for i in range(20)]
+
+numPadres = 0.8
+replace = True
+parent = competition(datas, numParent=numPadres, replace=replace)
+
+for pp in parent:
+    print(pp)
