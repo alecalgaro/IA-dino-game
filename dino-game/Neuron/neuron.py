@@ -12,7 +12,7 @@ class Neuron:
         La lista NO incluye a la capa de entrada.
         """
         skipRow = 0
-        for nRow in structure:
+        for nRow in structure[1:]:
             layerWeight = pd.read_csv(link, delimiter=',', 
                                       header=None, skiprows=skipRow, nrows=nRow)
             skipRow += nRow
@@ -23,8 +23,8 @@ class Neuron:
         Inicializacion aleatoria de los pesos en el rango [-0.5, 0.5]
         Asumimos que la capa de entrada cuenta con 5 dimensiones.
         """
-        nPrev = 5 # Capa de entrada
-        for nNext in structure:
+        nPrev = structure[0] # Capa de entrada
+        for nNext in structure[1:]:
             self.Wji.append(np.random.rand(nNext, nPrev + 1) - 0.5)
             nPrev = nNext
 

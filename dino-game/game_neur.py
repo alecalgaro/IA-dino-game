@@ -465,6 +465,7 @@ class Game:
             return inputs
 
         # Si el primer obstaculo ya paso donde esta dino, chequeo con el siguiente (cuando existe)
+        #! ¿ No seria obstacleData[0] + obstacleData[2] ?
         if (obstacleData[0] + obstacleData[2] < X_POS) and len(self.obstacles) > 1:
             obstacleData = self.obstacles[1].getObstacleData()
 
@@ -488,7 +489,8 @@ class Game:
                      player.getDinoData(),  # Y_DINO
                      obstacleData[1],       # Y_Obstaculo
                      obstacleData[2],       # ancho_obstaculo
-                     obstacleData[3]        # alto_obstaculo
+                     obstacleData[3],       # alto_obstaculo
+                     self.game_speed        # velocidad_juego
                      ]
 
             # Guardar las tuplas de inputs de dino vivo
@@ -589,7 +591,7 @@ def menu():
     
     # Estructura de la red neuronal
     bSigm = 5
-    NEURAL_STRUCTURE = [5, 3]
+    NEURAL_STRUCTURE = [6, 6, 3]
 
     start_menu()
 
