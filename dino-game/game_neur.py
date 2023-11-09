@@ -286,7 +286,7 @@ class Game:
     FONT = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
     X_POS_BG = 0
     Y_POS_BG = 380
-    VEL_CHECK = 200
+    VEL_CHECK = 150
     MAX_SPEED = 80
 
     #* ==================[Constructor, inicializacion]==================
@@ -353,7 +353,7 @@ class Game:
 
             #* Crear nuevo obstaculo
             self.time_prev = time.time()
-            self.time_next_obstacle = random.uniform(0.6, 2)    # tiempo entre generacion de obstaculos
+            self.time_next_obstacle = random.uniform(0.8, 2)    # tiempo entre generacion de obstaculos
 
             idx_obs = random.randint(0, 2)
             match idx_obs:
@@ -465,8 +465,7 @@ class Game:
             return inputs
 
         # Si el primer obstaculo ya paso donde esta dino, chequeo con el siguiente (cuando existe)
-        #! ¿ No seria obstacleData[0] + obstacleData[2] ?
-        if (obstacleData[0] + obstacleData[3] < X_POS) and len(self.obstacles) > 1:
+        if (obstacleData[0] + obstacleData[2] < X_POS) and len(self.obstacles) > 1:
             obstacleData = self.obstacles[1].getObstacleData()
 
         # Normalizamos para tener distancia al obstaculo / velocidad del juego
@@ -580,7 +579,7 @@ def menu():
     IPLAY = False           #* Juega el jugador
 
     # Configuracion de dino
-    N_DINO = 50               # Numero de dinos
+    N_DINO = 1               # Numero de dinos
     RAND_START = False       # Empezar en una posicion aleatoria
     
     # Parametros de algoritmo genetico
