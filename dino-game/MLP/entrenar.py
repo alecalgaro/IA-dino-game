@@ -2,9 +2,9 @@ import numpy as np
 from entrenamiento_MLP_v1 import *
 from entrenamiento_MLP_v2 import *
 
-archivoTrain = 'data.csv'
+archivoTrain = 'dataSet.csv'
 archivoValidation = 'dataSetValidation.csv'
-arquitectura = [5, 3]
+arquitectura = [6, 3]
 tasaErrorAceptable = 0.01
 numMaxEpocas = 1000
 gammab = 0.01

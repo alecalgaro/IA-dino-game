@@ -478,19 +478,19 @@ class Game:
             player = self.player[idx]
             # [
             # dist_norm
+            # velocidad del juego
             # Y_DINO
             # Y_obstaculo
             # ancho_obstaculo
             # alto_obstaculo
             # ]
-            #! RECORDAR QUE USE SOLOS dist Y NO dist/vel COMO ANTES
-            #! PROBAR AGREGAR TAMBIEN LA VELOCIDAD COMO OTRA ENTRADA Y VER SI MEJORA O NO
+
             input = [dist,             # distancia/velocidad
+                     self.game_speed,        # velocidad_juego
                      player.getDinoData(),  # Y_DINO
                      obstacleData[1],       # Y_Obstaculo
                      obstacleData[2],       # ancho_obstaculo
-                     obstacleData[3],       # alto_obstaculo
-                     self.game_speed        # velocidad_juego
+                     obstacleData[3]       # alto_obstaculo
                      ]
 
             # Guardar las tuplas de inputs de dino vivo
