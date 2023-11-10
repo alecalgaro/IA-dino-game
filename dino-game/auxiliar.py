@@ -183,16 +183,81 @@ import csv
 # 0.5165774851012345
 # 0.001
 
+
+#todo ==================[randint]==================
+z = np.zeros(shape=(4, 4))
+a = np.random.randint(low=[0, 0], high=[1, 4], size=(4, 2))
+print(a)
+z[a[:, 0], a[:, 1]] += np.random.uniform(-1, 1, size=(4))
+print(z)
+
+#todo ==================[check_file_existence]==================
+# import os
+
+# def check_file_existence(file_path):
+#     return os.path.exists(file_path)
+
+# # 用法示例
+# file_path = "dino-game/GENETIC/brain"
+
+# if check_file_existence(file_path):
+#     print(f"The file {file_path} exists.")
+# else:
+#     print(f"The file {file_path} does not exist.")
+
+
+#todo ==================[create_directory]==================
+# import os
+
+# def create_directory(directory_path):
+#     os.makedirs(directory_path, exist_ok=True)
+
+# # 用法示例
+# directory_path = "dino-game/GENETIC/brain/"
+
+# create_directory(directory_path)
+
+#todo ==================[getBrainLink]==================
+
+# def getBrainLink(genetic, neural_structure): 
+#     link = 'neurWeightMLP.csv'
+#     if(genetic):
+#         link = 'dino-game/GENETIC/dinoBrain'
+#         for num in neural_structure:
+#             link += '_' + str(num)
+#         link += '/'
+    
+#     return link
+
+# g = True
+# structure = [6, 6, 3]
+# print(getBrainLink(g, structure))
+
+#todo ==================[list copy]==================
+# x = np.random.choice([True, False], size=10)
+# print(x)
+#todo ==================[list copy]==================
+
+# a = [1, 2, 3]
+# b = a.copy()
+# b[0] = 0
+# print(a)
+
+#todo ==================[random choice]==================
+# idxs = np.arange(10)
+# a, b = np.random.choice(idxs, size=2, replace=False)
+# # a, b = np.random.randint(0, 10, size=2)
+# print(a, b)
 #todo ==================[bla]==================
 
-x = (12, 14)
-y = (10, 10)
-z = (5, 50)
-li = [x, y, z]
-for a, b in li:
-    print(a)
-    print(b)
-    print("hola")
+# x = (12, 14)
+# y = (10, 10)
+# z = (5, 50)
+# li = [x, y, z]
+# for a, b in li:
+#     print(a)
+#     print(b)
+#     print("hola")
 
 
 #todo ==================[Probar rango de mutacion]==================

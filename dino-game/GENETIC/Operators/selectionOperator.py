@@ -109,11 +109,11 @@ def roulette(dataPopulation, numParent, replace=False):
 
 #? Test operator
 
-datas = [(i, i) for i in range(20)]
+# datas = [(i, i) for i in range(20)]
 
-numPadres = 0.8
-replace = True
-parent = competition(datas, numParent=numPadres, replace=replace)
+# numPadres = 0.8
+# replace = True
+# parent = competition(datas, numParent=numPadres, replace=replace)
 
-for pp in parent:
-    print(pp)
+# for pp in parent:
+#     print(pp)

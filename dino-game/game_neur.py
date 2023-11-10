@@ -2,9 +2,11 @@ import pygame
 import os
 import random
 import time
-from collections import deque
 import numpy as np
+from collections import deque
 from Neuron.neuron import Neuron
+from GENETIC.Operators.selectionOperator import *
+from GENETIC.Operators.reproductionOperator import *
 
 pygame.init()
 
@@ -51,7 +53,7 @@ class Dinosaur:
     GRAVITY = 0.6
 
     def __init__(self, randStart = False, iPlay = True, initDinoBrain = False,
-                 genetic=False, structure=[], bSigm=1, idxBrain=0):
+                 genetic=False, structure=[], bSigm=1, idxBrain=0, link=''):
         self.duck_img = DUCKING
         self.run_img = RUNNING
         self.jump_img = JUMPING
@@ -78,18 +80,13 @@ class Dinosaur:
         self.promosion = 0
 
         # Armo su celebro si NO juego yo
-        #? Estructura de la neurona, HAY QUE ACLARAR AQUI
         if(not(iPlay)):
-
-            # Si usa algoritmo genetico, admite inicializacion aleatoria 
-            #! y rehace todo initDinoBrain = True
-            # Sino simplemente arma su celebro en base a los datos de poblacion
             if(genetic):
                 if(initDinoBrain):
                     #* Inicializar los pesos en el rango [-0.5, 0.5]
                     self.brain.initNeuralWeight(structure)
                 else:
-                    link = 'dino-game/GENETIC/dinoBrain'+ str(idxBrain) + '.csv'
+                    link += 'brain_' + str(idxBrain) + '.csv'
                     self.brain.loadNeuralWeight(link, structure)
 
             else:
@@ -126,13 +123,7 @@ class Dinosaur:
             self.dino_jump = True
             # print("Saltar")
 
-        #! si presiona para saltar y esta agachado (LO AGREGUE NUEVO)
-        # elif userInput[0] and self.dino_duck:
-        #     self.dino_duck = False
-        #     self.dino_run = False
-        #     self.dino_jump = True
-
-        #? Bajar rapido
+        #! Bajar rapido
         elif userInput[1] and self.dino_jump:
             self.jump_vel -= 2
             # print("Bajar rapido")
@@ -260,7 +251,6 @@ class LargeCactus(Obstacle):
         self.type = random.randint(0, 1)
         super().__init__(image, self.type)
         self.rect.y = 300
-        # self.rect.y = 325
 
 #? ===================[Bird]===================
 # Clase para representar aves
@@ -293,7 +283,7 @@ class Game:
     #* ==================[Constructor, inicializacion]==================
 
     def __init__(self, nDino = 1, randStart=False, iPlay=True, 
-                 initDinoBrain=False, genetic=False, structure=[], bSigm=1) :
+                 initDinoBrain=False, genetic=False, structure=[], bSigm=1, link='') :
         self.run = True
         self.iPlay = iPlay #? Juega el juador, sino ignora sus inputs
 
@@ -301,7 +291,7 @@ class Game:
         self.player = []
         for idx in range(nDino):
             self.player.append(Dinosaur(randStart, iPlay, initDinoBrain, genetic,
-                                        structure=structure, bSigm=bSigm, idxBrain=idx))
+                                        structure=structure, bSigm=bSigm, idxBrain=idx, link=link))
 
         self.numLive = nDino
         self.idxLive = np.arange(nDino)
@@ -586,23 +576,42 @@ class Game:
 
 # Función que muestra el menú inicial y maneja reinicios
 def menu():
-    #! Parametros principales
-    run = True
-
-    IPLAY = False           #* Juega el jugador
+    #! ===============[Parametros principales]===============
+    IPLAY = False               #? True = Juega el jugador, False = buscar/generar celebro
 
     # Configuracion de dino
-    N_DINO = 1               # Numero de dinos
-    RAND_START = False       # Empezar en una posicion aleatoria
-    
-    # Parametros de algoritmo genetico
-    GENETIC = False
-    INIT_DINO_BRAIN = False   #! Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    UPDATE_POPULATION = False #! Actualizar la poblacion por medio de mutacion y cruza
+    N_DINO = 50                 #? Numero de dinos
+    RAND_START = True           #? Empezar en una posicion aleatoria
     
     # Estructura de la red neuronal
     bSigm = 1
     NEURAL_STRUCTURE = [6, 6, 3]
+
+
+    # Parametros de algoritmo genetico
+    GENETIC = True              #? False = MLP
+    INIT_DINO_BRAIN = True      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+    UPDATE_POPULATION = False   #? Actualizar o no la poblacion por medio de mutacion y cruza
+
+
+    #* Cuando UPDATE_POPULATION = True
+    # Parametros de SELECCION 
+    SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
+    NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
+    REPLACE = False             #? Admitir o no repeticion de individuos
+
+    # Parametros de REPRODUCCION
+    PROB_CROSS = 0.8
+    PROB_MUTA = 0.1
+
+
+
+    #! ======================================================
+    run = True
+
+    # Generar el string para ubicar/generar la carpeta donde estan los celebros
+    link = getBrainLink(genetic=GENETIC, neural_structure=NEURAL_STRUCTURE)
+    os.makedirs(link, exist_ok=True)
 
     start_menu()
 
@@ -613,13 +622,54 @@ def menu():
             if event.type == pygame.KEYDOWN:
                 # game = Game()
                 game = Game(nDino=N_DINO, randStart=RAND_START, iPlay=IPLAY,
-                            initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, structure=NEURAL_STRUCTURE, bSigm=bSigm)
+                            initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, 
+                            structure=NEURAL_STRUCTURE, bSigm=bSigm, link=link)
                 dataPopulation = game.main()
                 points = dataPopulation[-1][0]
+
+                if(UPDATE_POPULATION):
+                    parent = []
+
+                    match(SELECT_OPER):
+                        case 0:
+                            parent = window(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+                        case 1:
+                            parent = competition(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+                        case _:
+                            parent = roulette(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+                    
+                    child = crossover(structure=NEURAL_STRUCTURE, parent=parent, 
+                                      nDino=N_DINO, probability=PROB_CROSS)
+
+                    #! blalalal
+                    child = mutation()
+
+                    population = parent + child
+
+                    # Guardar estos datos en las carpetas que le correspondan
+                    savePopulation(population, link)
             
                 # INIT_DINO_BRAIN = False
 
                 restart_menu(points)
+
+def savePopulation(brains, link):
+    for idx, Wji in enumerate(brains):
+        path = link + 'brain_' + str(idx) + '.csv'
+
+        with open(path, 'w') as file:
+            for weight in Wji:
+                np.savetxt(file, weight, delimiter=',')
+
+def getBrainLink(genetic, neural_structure): 
+    link = 'neurWeightMLP.csv'
+    if(genetic):
+        link = 'dino-game/GENETIC/dinoBrain'
+        for num in neural_structure:
+            link += '_' + str(num)
+        link += '/'
+    
+    return link
 
 def start_menu():
     SCREEN.fill((255, 255, 255))
