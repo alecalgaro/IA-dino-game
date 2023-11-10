@@ -8,10 +8,6 @@ from Neuron.neuron import Neuron
 
 pygame.init()
 
-#! Detalle para pensar: el dinosaurio en realidad esta quieto, lo que se mueve es el fondo
-#! con los obstaculos, asi que la distancia del dino al obstaculo se podria calcular
-#! directo como la "x" del obstaculo tal vez.
-
 # Definición de constantes globales
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
@@ -29,12 +25,15 @@ DUCKING = [pygame.image.load(os.path.join(root, "assets/Dino", "DinoDuck1.png"))
 
 SMALL_CACTUS = [pygame.image.load(os.path.join(root, "assets/Cactus", "SmallCactus1.png")),
                 pygame.image.load(os.path.join(root, "assets/Cactus", "SmallCactus2.png")),
-                # pygame.image.load(os.path.join(root, "assets/Cactus", "SmallCactus3.png"))
+                pygame.image.load(os.path.join(root, "assets/Cactus", "SmallCactus3.png"))
                 ]
 
-LARGE_CACTUS = [pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus1.png")),
+LARGE_CACTUS = [
+                pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus1.png")),
+                pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus1.png"))
                 # pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus2.png")),
-                pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus3.png"))]
+                # pygame.image.load(os.path.join(root, "assets/Cactus", "LargeCactus3.png"))
+                ]
 
 BIRD = [pygame.image.load(os.path.join(root, "assets/Bird", "Bird1.png")),
         pygame.image.load(os.path.join(root, "assets/Bird", "Bird2.png"))]
@@ -95,7 +94,9 @@ class Dinosaur:
 
             else:
                 #* Cargar pesos 
-                link = 'neurWeightMLP_maso.csv'
+                # link = 'neurWeightMLP_2.3error.csv'
+                link = 'neurWeightMLP_1.3error.csv'     # EL MEJOR
+                # link = 'neurWeightMLP.csv'
                 self.brain.loadNeuralWeight(link, structure)
 
     #? =================[Actualizar en base a decision de neurona o del jugador]=================
@@ -112,7 +113,6 @@ class Dinosaur:
         # if(decisionPrev != np.argmax(self.decision)):
         #     self.promosion += 20
         
-
     def updateNeuralInput(self):
         self.updateUserInput(self.decision)
 
@@ -143,7 +143,7 @@ class Dinosaur:
             self.dino_run = False
             self.dino_jump = False
             # print("Agacharse")
-        
+            
         #! si no esta saltando ni presionando para agacharse o saltar
         elif not (self.dino_jump or userInput[0] or userInput[1]):
             self.dino_duck = False
@@ -260,6 +260,7 @@ class LargeCactus(Obstacle):
         self.type = random.randint(0, 1)
         super().__init__(image, self.type)
         self.rect.y = 300
+        # self.rect.y = 325
 
 #? ===================[Bird]===================
 # Clase para representar aves
@@ -286,7 +287,7 @@ class Game:
     FONT = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
     X_POS_BG = 0
     Y_POS_BG = 380
-    VEL_CHECK = 150
+    VEL_CHECK = 20
     MAX_SPEED = 80
 
     #* ==================[Constructor, inicializacion]==================
@@ -326,7 +327,7 @@ class Game:
     def updateSpeed(self):
         if self.points % 100 == 0:   # aumenta la velocidad del juego cada 100 puntos
             # Tener una velocidad maxima
-            self.game_speed = min(self.MAX_SPEED, self.game_speed + 0.4)
+            self.game_speed = min(self.MAX_SPEED, self.game_speed + 0.2)
             self.check_interval = self.VEL_CHECK//self.game_speed
 
     def drawScore(self):
@@ -360,14 +361,15 @@ class Game:
                 case 0:
                     self.obstacles.append(SmallCactus(SMALL_CACTUS))
                 case 1:
-                    self.obstacles.append(SmallCactus(SMALL_CACTUS))
-                    # self.obstacles.append(LargeCactus(LARGE_CACTUS))
+                    self.obstacles.append(LargeCactus(LARGE_CACTUS))
                 case 2:
                     self.obstacles.append(Bird(BIRD))
 
         #* Eliminar el ultimo elemento si ya salio de la pantalla
         obs_data = self.obstacles[0].getObstacleData()
-        out = obs_data[0] < -obs_data[3]
+        # out = obs_data[0] < -obs_data[2]
+        out = obs_data[0] < (-obs_data[2] + 20)
+        # out = obs_data[0] == -10
         if out:
             self.obstacles.popleft()
 
@@ -398,7 +400,7 @@ class Game:
             obstacle_collision_rect = obstacle.rect.inflate(-60, -5)
 
         #? Hitbox
-        pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(obstacle_collision_rect))
+        # pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(obstacle_collision_rect))
 
         # Recorrer cada dino y verificar si esta en colision
         for idx in self.idxLive[self.idxBoolLive]:
@@ -406,7 +408,7 @@ class Game:
             dino_collision_rect = player.dino_rect.inflate(-50, -5)
 
             #? Hitbox
-            pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(dino_collision_rect))
+            # pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(dino_collision_rect))
 
             # Haber colision, lo elimino de la lista y registro su indice con su puntaje 
             if dino_collision_rect.colliderect(obstacle_collision_rect):
@@ -492,14 +494,6 @@ class Game:
                      obstacleData[2],       # ancho_obstaculo
                      obstacleData[3]       # alto_obstaculo
                      ]
-            
-            # input = [round(dist, 3),             # distancia/velocidad
-            #          round(self.game_speed, 3),        # velocidad_juego
-            #          round(player.getDinoData(), 3),  # Y_DINO
-            #          round(obstacleData[1], 3),       # Y_Obstaculo
-            #          round(obstacleData[2], 3),       # ancho_obstaculo
-            #          round(obstacleData[3], 3)       # alto_obstaculo
-            #          ]
             
             # Guardar las tuplas de inputs de dino vivo
             if(dist > 0):    # para que no guarde distancias negativas que son en los frames cuando el ostaculo pasa al dino 
@@ -604,7 +598,7 @@ class Game:
 
             if self.counter >= self.check_interval:
                 self.counter = 0
-                pygame.draw.rect(SCREEN, (255, 0, 0), pygame.Rect(100, 100, 100, 100))
+                # pygame.draw.rect(SCREEN, (255, 0, 0), pygame.Rect(100, 100, 100, 100))
             else:
                 self.counter += 1
 
@@ -631,7 +625,7 @@ def menu():
     UPDATE_POPULATION = False #! Actualizar la poblacion por medio de mutacion y cruza
     
     # Estructura de la red neuronal
-    bSigm = 5
+    bSigm = 1
     NEURAL_STRUCTURE = [6, 6, 3]
 
     start_menu()
