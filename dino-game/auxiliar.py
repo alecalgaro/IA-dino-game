@@ -183,13 +183,21 @@ import csv
 # 0.5165774851012345
 # 0.001
 
+#todo ==================[list to string]==================
+my_list = [1, 2, 3]
+
+# 将列表转换为字符串，手动添加方括号
+my_string = str(my_list)
+
+print(my_string)
+
 
 #todo ==================[randint]==================
-z = np.zeros(shape=(4, 4))
-a = np.random.randint(low=[0, 0], high=[1, 4], size=(4, 2))
-print(a)
-z[a[:, 0], a[:, 1]] += np.random.uniform(-1, 1, size=(4))
-print(z)
+# z = np.zeros(shape=(4, 4))
+# a = np.random.randint(low=[0, 0], high=[1, 4], size=(4, 2))
+# print(a)
+# z[a[:, 0], a[:, 1]] += np.random.uniform(-1, 1, size=(4))
+# print(z)
 
 #todo ==================[check_file_existence]==================
 # import os
@@ -260,13 +268,19 @@ print(z)
 #     print("hola")
 
 
+#todo ==================[enconteres in exp]==================
+# alpha= 5
+# Vi = np.arange(8)
+# Y = 2/(1 + np.exp(-alpha * Vi)) - 1
+# print(Vi.shape)
+# print(Y)
 #todo ==================[Probar rango de mutacion]==================
-# x = np.linspace(10, 10_000, 1000)
-# y = 2/np.log(x) - 0.000015*x
-# # y = x**float(-0.01) - 0.000015*x
+# x = np.linspace(10, 10_000, 1000)#!
+# # y = 2/np.log(x) - 0.000015*x
+# # # y = x**float(-0.01) - 0.000015*x
 # # y = 1/x**float(0.1) 
-# # base = 5
-# # y = 1/np.emath.logn(base, x)
+# base = 5                        #!
+# y = 1/np.emath.logn(base, x)    #!
 
 # y2 = -y
 # plt.plot(x, y)

@@ -29,7 +29,14 @@ class Neuron:
             nPrev = nNext
 
     def _sigmoidea(self, Wji, Xi, alpha):
+        
+        # print(f"Wji.shape = {Wji.shape}")
+        # print(f"Xi.shape = {Xi.shape}")
+
         Vi = Wji@Xi
+
+        # print(f"Vi = {Vi}") #! Puede aparecer exponentes como 580, e^580 da error
+
         Y = 2/(1 + np.exp(-alpha * Vi)) - 1
         return Y
 

@@ -31,8 +31,8 @@ def window(dataPopulation, numParent, replace=False):
 
             if(idxSelected >= start):
                 start -= 1
-                while(not(idxBool[start])):
-                    start -= 1
+                # while(not(idxBool[start])):
+                #     start -= 1
         
         idxBool[:start] = False
         parent.append(dataPopulation[idxSelected][1])

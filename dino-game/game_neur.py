@@ -262,7 +262,7 @@ class Bird(Obstacle):
     def __init__(self, image):
         self.type = 0
         super().__init__(image, self.type)
-        self.rect.y = np.random.choice([220, 270, 325], p=[0.2, 0.4, 0.4])
+        self.rect.y = np.random.choice([200, 270, 325], p=[0.55, 0.35, 0.1])
         self.index = 0
 
     def draw(self, SCREEN):
@@ -279,15 +279,17 @@ class Game:
     # Valores constantes en mayuscula
     CLOCK = pygame.time.Clock()
     FONT = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
+    FONT2 = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 15)
     X_POS_BG = 0
     Y_POS_BG = 380
-    VEL_CHECK = 150
+    VEL_CHECK = 120
     MAX_SPEED = 80
 
     #* ==================[Constructor, inicializacion]==================
 
     def __init__(self, nDino = 1, randStart=False, iPlay=True, 
-                 initDinoBrain=False, genetic=False, structure=[], bSigm=1, link='') :
+                 initDinoBrain=False, genetic=False, structure=[], 
+                 bSigm=1, link='', geneticRecord=[]):
         self.run = True
         self.iPlay = iPlay #? Juega el juador, sino ignora sus inputs
 
@@ -309,6 +311,11 @@ class Game:
         self.points = 0     #? variable que nos interesa para el algoritmo evolutivo
         self.registPoints = []
 
+        # Datos para mostrar en la pantalla
+        self.structure = structure
+        self.genetic = genetic
+        self.geneticRecord = geneticRecord
+
         # n frame hace un check
         self.counter = 0
         self.check_interval = self.VEL_CHECK//self.game_speed
@@ -324,10 +331,51 @@ class Game:
             self.game_speed = min(self.MAX_SPEED, self.game_speed + 0.4)
             self.check_interval = self.VEL_CHECK//self.game_speed
 
+    def drawGeneticRecord(self) -> None:
+
+
+        txt0 = "Structure: " + str(self.structure)
+        txt1 = "Generation: " + str(int(self.geneticRecord[0]))
+        txt2 = "Max Score: " + str(int(self.geneticRecord[1]))
+        txt3 = "Alive:" + str(self.numLive)
+
+        x = 720
+        y = 75
+        linespacing = 22
+
+        # Structure
+        text = self.FONT2.render(txt0, True, (0, 0, 0))
+        textRect = text.get_rect()
+        textRect.topleft = (x, y)
+        SCREEN.blit(text, textRect)
+        y += linespacing
+
+        # Generation
+        text = self.FONT2.render(txt1, True, (0, 0, 0))
+        textRect = text.get_rect()
+        textRect.topleft = (x, y)
+        SCREEN.blit(text, textRect)
+        y += linespacing
+
+        # Max Score
+        text = self.FONT2.render(txt2, True, (0, 0, 0))
+        textRect = text.get_rect()
+        textRect.topleft = (x, y)
+        SCREEN.blit(text, textRect)
+        y += linespacing
+
+        # Alive
+        text = self.FONT2.render(txt3, True, (0, 0, 0))
+        textRect = text.get_rect()
+        textRect.topleft = (x, y)
+        SCREEN.blit(text, textRect)
+
+
+
     def drawScore(self):
         text = self.FONT.render("Points: " + str(self.points), True, (0, 0, 0))
         textRect = text.get_rect()
-        textRect.center = (920, 40)
+        textRect.topleft = (750, 40)
         SCREEN.blit(text, textRect)
     
     def drawBackground(self):
@@ -348,9 +396,9 @@ class Game:
 
             #* Crear nuevo obstaculo
             self.time_prev = time.time()
-            self.time_next_obstacle = random.uniform(0.8, 2)    # tiempo entre generacion de obstaculos
+            self.time_next_obstacle = random.uniform(0.6, 2)    # tiempo entre generacion de obstaculos
 
-            idx_obs = random.randint(0, 2)
+            idx_obs = np.random.choice([0, 1, 2], p=[0.2, 0.2, 0.6])
             match idx_obs:
                 case 0:
                     self.obstacles.append(SmallCactus(SMALL_CACTUS))
@@ -390,7 +438,7 @@ class Game:
         # Armar el collision rect de obstaculo
         obstacle_collision_rect = obstacle.rect.inflate(-10, 0)
         if isinstance(obstacle, Bird):
-            obstacle_collision_rect = obstacle.rect.inflate(-60, -5)
+            obstacle_collision_rect = obstacle.rect.inflate(-30, -5)
 
         #? Hitbox
         pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(obstacle_collision_rect))
@@ -511,6 +559,9 @@ class Game:
 
         self.drawScore()
         self.drawBackground()
+        
+        if(self.genetic):
+            self.drawGeneticRecord()
 
         for obstacle in self.obstacles:
             obstacle.draw(SCREEN)
@@ -615,21 +666,21 @@ def menu():
     IPLAY = False               #? True = Juega el jugador, False = buscar/generar celebro
 
     # Configuracion de dino
-    N_DINO = 50                 #? Numero de dinos
-    RAND_START = True           #? Empezar en una posicion aleatoria
+    N_DINO = 80                 #? Numero de dinos
+    RAND_START = False           #? Empezar en una posicion aleatoria
     
     # Estructura de la red neuronal
-    bSigm = 5
-    NEURAL_STRUCTURE = [6, 6, 3]
+    bSigm = 1
+    NEURAL_STRUCTURE = [6, 8, 3]
 
 
     # Parametros de algoritmo genetico
     GENETIC = True              #? False = MLP
-    INIT_DINO_BRAIN = True      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    UPDATE_POPULATION = False   #? Actualizar o no la poblacion por medio de mutacion y cruza
+    INIT_DINO_BRAIN = False      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+    UPDATE_POPULATION = True   #? Actualizar o no la poblacion por medio de mutacion y cruza
 
 
-    #* Cuando UPDATE_POPULATION = True
+    #* ===============[Cuando UPDATE_POPULATION = True]===============
     # Parametros de SELECCION 
     SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
     NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
@@ -637,8 +688,8 @@ def menu():
 
     # Parametros de REPRODUCCION
     PROB_CROSS = 0.8
-    PROB_MUTA = 0.1
-
+    PROB_MUTA = 0.15
+    #* ===============================================================
 
 
     #! ======================================================
@@ -646,8 +697,9 @@ def menu():
 
     # Generar el string para ubicar/generar la carpeta donde estan los celebros
     link = getBrainLink(genetic=GENETIC, neural_structure=NEURAL_STRUCTURE)
-    os.makedirs(link, exist_ok=True)
+    elite = []
 
+    # Graficar el menu del comienzo
     start_menu()
 
     while run:
@@ -655,39 +707,72 @@ def menu():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
-                # game = Game()
+
+                # (0 -> generation, 1 -> maxScore)
+                reg = getPopulationRegister(GENETIC, INIT_DINO_BRAIN, link)
+                # Sacar los mejores puntos
+                generation = reg[0]
+                maxScore = reg[1]
+
+                #! game = Game()
                 game = Game(nDino=N_DINO, randStart=RAND_START, iPlay=IPLAY,
                             initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, 
-                            structure=NEURAL_STRUCTURE, bSigm=bSigm, link=link)
+                            structure=NEURAL_STRUCTURE, bSigm=bSigm, link=link, 
+                            geneticRecord=reg)
                 dataPopulation = game.main()
                 points = dataPopulation[-1][0]
 
-                if(UPDATE_POPULATION):
-                    parent = []
+                if(GENETIC and UPDATE_POPULATION):
+                    if(len(elite) == 0):
+                        elite = dataPopulation[0][1].copy()
 
-                    match(SELECT_OPER):
-                        case 0:
-                            parent = window(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
-                        case 1:
-                            parent = competition(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
-                        case _:
-                            parent = roulette(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+                    if(maxScore <= points):
+                        # Elitismo
+                        elite = dataPopulation[-1][1].copy()
+                        maxScore = points
                     
-                    child = crossover(structure=NEURAL_STRUCTURE, parent=parent, 
-                                      nDino=N_DINO, probability=PROB_CROSS)
+                    generation += 1
 
-                    #! blalalal
-                    child = mutation()
+                    reg = [generation, maxScore]
 
-                    population = parent + child
-
-                    # Guardar estos datos en las carpetas que le correspondan
-                    savePopulation(population, link)
-            
-                # INIT_DINO_BRAIN = False
+                    updatePopulation(SELECT_OPER, dataPopulation, NUM_PARENT, REPLACE, NEURAL_STRUCTURE,
+                                     N_DINO, PROB_CROSS, PROB_MUTA, maxScore, elite, link, reg)
+           
+                    INIT_DINO_BRAIN = False
 
                 restart_menu(points)
 
+def updatePopulation(SELECT_OPER, dataPopulation, NUM_PARENT, REPLACE,
+                     NEURAL_STRUCTURE, N_DINO, PROB_CROSS, PROB_MUTA, 
+                     points, elite, link, register):
+    parent = []
+    match(SELECT_OPER):
+        case 0:
+            parent = window(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+        case 1:
+            parent = competition(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+        case _:
+            parent = roulette(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+    
+    parent[0] = elite
+    # Cruza
+    child = crossover(structure=NEURAL_STRUCTURE, parent=parent, 
+                        nDino=N_DINO, probability=PROB_CROSS)
+    # Mutacion
+    child = mutation(structure=NEURAL_STRUCTURE, childs=child, 
+                        probability=PROB_MUTA, score=points)
+
+    # Unir los padres hijos
+    population = parent + child
+
+    # Almacenar poblacion en las carpetas que le correspondan
+    savePopulation(population, link)
+    saveRegister(register, link)
+
+
+
+
+#* Almacenar Poblacion
 def savePopulation(brains, link):
     for idx, Wji in enumerate(brains):
         path = link + 'brain_' + str(idx) + '.csv'
@@ -696,6 +781,12 @@ def savePopulation(brains, link):
             for weight in Wji:
                 np.savetxt(file, weight, delimiter=',')
 
+#* Almacenar el registro de poblacion
+def saveRegister(register, link) -> None:
+    np.savetxt(link + 'register.csv', register, delimiter=',')
+
+
+#* Extraer la ubicacion del archivo de los pesos
 def getBrainLink(genetic, neural_structure): 
     link = 'neurWeightMLP.csv'
     if(genetic):
@@ -703,8 +794,33 @@ def getBrainLink(genetic, neural_structure):
         for num in neural_structure:
             link += '_' + str(num)
         link += '/'
+
+        os.makedirs(link, exist_ok=True)
     
     return link
+
+# Extraer registro de la poblacion
+def getPopulationRegister(GENETIC, INIT_DINOBRAIN, link):
+    """
+    When it IS genetic, it returns
+    [0] -> generation 
+    [1] -> maxScore
+    """
+    register = [int(0), int(0)]
+    if(GENETIC and not(INIT_DINOBRAIN)):
+        path = link + "register.csv"
+        
+        # Si existe el registro, extrae los datos. 
+        if(os.path.exists(path)):
+            register = np.genfromtxt(path, delimiter=',')
+
+        # Sino crea el registro.  
+        else:
+            np.savetxt(path, register, delimiter=",")
+    
+    return register
+
+
 
 def start_menu():
     SCREEN.fill((255, 255, 255))
