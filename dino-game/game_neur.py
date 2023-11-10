@@ -281,7 +281,7 @@ class Game:
     FONT = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
     X_POS_BG = 0
     Y_POS_BG = 380
-    VEL_CHECK = 200
+    VEL_CHECK = 150
     MAX_SPEED = 80
 
     #* ==================[Constructor, inicializacion]==================
@@ -348,14 +348,15 @@ class Game:
 
             #* Crear nuevo obstaculo
             self.time_prev = time.time()
-            self.time_next_obstacle = random.uniform(0.6, 2)    # tiempo entre generacion de obstaculos
+            self.time_next_obstacle = random.uniform(0.8, 2)    # tiempo entre generacion de obstaculos
 
             idx_obs = random.randint(0, 2)
             match idx_obs:
                 case 0:
                     self.obstacles.append(SmallCactus(SMALL_CACTUS))
                 case 1:
-                    self.obstacles.append(LargeCactus(LARGE_CACTUS))
+                    self.obstacles.append(SmallCactus(SMALL_CACTUS))
+                    # self.obstacles.append(LargeCactus(LARGE_CACTUS))
                 case 2:
                     self.obstacles.append(Bird(BIRD))
 
@@ -451,7 +452,7 @@ class Game:
         inputs = []
 
         # Dino x, y 
-        X_POS = 70
+        X_POS = 80
 
         if(len(self.obstacles) > 0):
             # Con getObstacleData sacamos (x, y, ancho, alto) del obstaculo
@@ -460,36 +461,46 @@ class Game:
             return inputs
 
         # Si el primer obstaculo ya paso donde esta dino, chequeo con el siguiente (cuando existe)
-        #! ¿ No seria obstacleData[0] + obstacleData[2] ?
         if (obstacleData[0] + obstacleData[2] < X_POS) and len(self.obstacles) > 1:
             obstacleData = self.obstacles[1].getObstacleData()
 
         # Normalizamos para tener distancia al obstaculo / velocidad del juego
         dist = obstacleData[0] - X_POS
-        dist_norm = dist/self.game_speed   
+        # dist_norm = dist/self.game_speed 
         
         # for player in self.player:
         for idx in self.idxLive[self.idxBoolLive]:
             player = self.player[idx]
             # [
             # dist_norm
+            # velocidad del juego
             # Y_DINO
             # Y_obstaculo
             # ancho_obstaculo
             # alto_obstaculo
             # ]
-            #! RECORDAR QUE USE SOLOS dist Y NO dist/vel COMO ANTES
-            #! PROBAR AGREGAR TAMBIEN LA VELOCIDAD COMO OTRA ENTRADA Y VER SI MEJORA O NO
+            
             input = [dist,             # distancia/velocidad
+                     self.game_speed,        # velocidad_juego
                      player.getDinoData(),  # Y_DINO
                      obstacleData[1],       # Y_Obstaculo
                      obstacleData[2],       # ancho_obstaculo
-                     obstacleData[3],       # alto_obstaculo
-                     self.game_speed        # velocidad_juego
+                     obstacleData[3]       # alto_obstaculo
                      ]
-
+            
+            # input = [round(dist, 3),             # distancia/velocidad
+            #          round(self.game_speed, 3),        # velocidad_juego
+            #          round(player.getDinoData(), 3),  # Y_DINO
+            #          round(obstacleData[1], 3),       # Y_Obstaculo
+            #          round(obstacleData[2], 3),       # ancho_obstaculo
+            #          round(obstacleData[3], 3)       # alto_obstaculo
+            #          ]
+            
             # Guardar las tuplas de inputs de dino vivo
-            inputs.append((idx, input))
+            if(dist > 0):    # para que no guarde distancias negativas que son en los frames cuando el ostaculo pasa al dino 
+                inputs.append((idx, input))
+                # print("dist:", f'{input[0]:.2f}')
+                # print(f'{valor:.2f}')
 
         return inputs
 
@@ -532,7 +543,8 @@ class Game:
 
             self.collision()
 
-            # #! Generar data set aux para agregarlo en el data set 
+            # #! Generar data set aux para agregarlo en el data set
+            # # Primero guarda en el dataSetAux y con el otro "if" guarda solo si fue exitoso 
             # if(userInput[0] or userInput[1] or userInput[2]):
             #     input = self.getNeuronalInput()
             #     if(len(input) > 0):
@@ -544,12 +556,41 @@ class Game:
             #         # np.savetxt('dataSetAux.csv', dataSet, delimiter=',')
 
             # #! Actualizar el data set para entrenar MLP
+            # # Si el obstaculo sale de la pantalla significa que fue exitoso, entonces ahi lo guarda
+            # # en el dataSet. Por ejemplo, cuando pierda no lo va a guardar.
             # if(outScreen):
             #     with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
             #         content = source_file.read()
             #         target_file.write(content)
             #     with open("dataSetAux.csv", 'w') as file:
             #         file.truncate()
+
+            #! -------- GUARDA LOS VALORES COMO ENTEROS ----------
+
+            #! Generar data set aux para agregarlo en el data set
+            #Primero guarda en el dataSetAux y con el otro "if" guarda solo si fue exitoso 
+            # if(userInput[0] or userInput[1] or userInput[2]):
+            #     input = self.getNeuronalInput()
+            #     if(len(input) > 0):
+            #         input_data = [int(value) for value in input[0][1]]  # Convierte los valores a enteros
+            #         user_input = [int(value) for value in userInput]  # Convierte los valores a enteros
+            #         dataSet = np.concatenate([input_data, user_input])[np.newaxis]
+
+            #         #* Guardar datos en un archivo auxiliar
+            #         with open("dataSetAux.csv", 'a') as auxFile:
+            #             np.savetxt(auxFile, dataSet, delimiter=',', fmt='%d')  # Utiliza fmt='%d' para guardar enteros
+
+            # #! Actualizar el data set para entrenar MLP
+            # # Si el obstáculo sale de la pantalla significa que fue exitoso, entonces ahí lo guarda
+            # # en el dataSet. Por ejemplo, cuando pierda no lo va a guardar.
+            # if(outScreen):
+            #     with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
+            #         content = source_file.read()
+            #         target_file.write(content)
+            #     with open("dataSetAux.csv", 'w') as file:
+            #         file.truncate()
+
+            #! ------------------
 
             #* Check dino vivo, sino sale del juego
             if self.numLive == 0:
