@@ -276,9 +276,10 @@ class Game:
     CLOCK = pygame.time.Clock()
     FONT = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
     FONT2 = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 15)
+    FONT3 = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 35)
     X_POS_BG = 0
     Y_POS_BG = 380
-    VEL_CHECK = 20
+    VEL_CHECK = 60
     MAX_SPEED = 80
 
     #* ==================[Constructor, inicializacion]==================
@@ -549,8 +550,18 @@ class Game:
         self.drawScore()
         self.drawBackground()
         
+        txt = "MLP"
+        color = (255, 0, 0)
+
         if(self.genetic):
             self.drawGeneticRecord()
+            txt = "GENETIC"
+            color = (0, 255, 0)
+
+        text = self.FONT3.render(txt, True, color)
+        textRect = text.get_rect()
+        textRect.center = (550, 50)
+        SCREEN.blit(text, textRect)
 
         for obstacle in self.obstacles:
             obstacle.draw(SCREEN)
@@ -627,7 +638,7 @@ class Game:
 
 # Función que muestra el menú inicial y maneja reinicios
 def menu():
-    #! ===============[Parametros principales]===============
+    #! ========================[Parametros principales]========================
     IPLAY = False               #? True = Juega el jugador, False = buscar/generar celebro
 
     # Configuracion de dino
@@ -638,14 +649,18 @@ def menu():
     bSigm = 1
     NEURAL_STRUCTURE = [6, 8, 3]
 
+    #!=================
+    GENETIC = False              #? (True = GENETIC, False = MLP)
+    #!=================
 
+
+    #* ===============[Parametros de GENETIC]===============
     # Parametros de algoritmo genetico
-    GENETIC = True              #? False = MLP
     INIT_DINO_BRAIN = False      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
     UPDATE_POPULATION = True   #? Actualizar o no la poblacion por medio de mutacion y cruza
 
 
-    #* ===============[Cuando UPDATE_POPULATION = True]===============
+    #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
     SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
     NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
@@ -654,12 +669,14 @@ def menu():
     # Parametros de REPRODUCCION
     PROB_CROSS = 0.8
     PROB_MUTA = 0.15
-    #* ===============================================================
+    #* ====================================================
 
 
-    #! ======================================================
+    #! ========================================================================
     run = True
     if(not(GENETIC)):
+        N_DINO = 1
+        RAND_START = False
         NEURAL_STRUCTURE = [6, 6, 3]
 
     # Generar el string para ubicar/generar la carpeta donde estan los celebros
