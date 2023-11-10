@@ -2,9 +2,10 @@ import numpy as np
 from cargarDatos import *
 from sigmoidea import *
 from winnerTakesAll import *
+from graficas import *
 
 def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErrorAceptable, numMaxEpocas,  
-                      gamma, bSigmoidea=1):
+                      gamma, bSigmoidea=1, grafError=False):
     """
     Algoritmo de entrenamiento del perceptron multicapa.
     Entradas: datos, arquitectura de capas (por ejemplo [3 2]), tasa de error aceptable, 
@@ -69,6 +70,10 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
     # Para el ejemplo [3, 2] tendria deltas = [array([0., 0., 0.]), array([0., 0.])]
     for i in arquitectura:
         deltas.append(np.zeros(i))
+
+    # Iniciar graficas para errores
+    if(grafError):
+        (ax, ax2) = iniciarGraficasErrores()
 
     #* ----- Bucle general ----- 
     while(contEpocas < numMaxEpocas and tasaErrorActual > tasaErrorAceptable):
@@ -211,9 +216,12 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
         errorCuadraticoPromedio = errorProm/cantPatrones
         errorCuadPlot.append(errorCuadraticoPromedio)
 
-        print(errorCuadraticoPromedio)
-        print(round(tasaErrorActual, 3))
+        print("ECM:", errorCuadraticoPromedio, "Tasa de error:", round(tasaErrorActual, 3))
 
+        # Actualizo las graficas de errores
+        if(grafError):
+            actualizarGraficasErrores(ax, ax2, errorCuadPlot, tasaErrorPlot)
+            
     #* fin del while general
 
     if(contEpocas == numMaxEpocas): 
