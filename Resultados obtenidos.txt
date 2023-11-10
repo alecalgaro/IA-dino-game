@@ -1,0 +1,30 @@
+neurWeightMLP_1.3%error
+archivoTrain = 'train.csv'
+archivoValidation = 'test.csv'
+arquitectura = [6, 3]
+tasaErrorAceptable = 0.01
+numMaxEpocas = 2000
+gammab = 0.001
+bSigm = 1
+
+Funciona perfecto porque no hace ningún movimiento innecesario, y supera los 10.000 puntos.
+
+En realidad antes de 500 epocas ya había llegado a ese porcentaje de error, pero como tenia configurado tasaErrorAceptable = 0.01 llego hasta el numMaxEpocas. 
+
+-------------------------------------
+
+neurWeightMLP_2.3%error
+archivoTrain = 'train.csv'
+archivoValidation = 'test.csv'
+arquitectura = [6, 3]
+tasaErrorAceptable = 0.01
+numMaxEpocas = 2000
+gammab = 0.001
+bSigm = 5
+
+Usando VEL_CHECK = 10 en general siempre hace alrededor de 8000 puntos, el doble que los datos de entrenamiento que tuvo.
+
+En realidad antes de 500 epocas ya había llegado a ese porcentaje de error, pero como tenia configurado tasaErrorAceptable = 0.01 llego hasta el numMaxEpocas. 
+
+-------------------------------------
+
