@@ -3,7 +3,7 @@ from entrenamiento_MLP_v1 import *
 from entrenamiento_MLP_v2 import *
 
 archivoTrain = 'dataSet.csv'
-archivoValidation = 'dataSetValidation.csv'
+archivoValidation = 'dataVal.csv'
 arquitectura = [6, 3]
 tasaErrorAceptable = 0.01
 numMaxEpocas = 1000
