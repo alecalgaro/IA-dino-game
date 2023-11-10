@@ -542,30 +542,7 @@ class Game:
 
             self.collision()
 
-            # #! Generar data set aux para agregarlo en el data set
-            # # Primero guarda en el dataSetAux y con el otro "if" guarda solo si fue exitoso 
-            # if(userInput[0] or userInput[1] or userInput[2]):
-            #     input = self.getNeuronalInput()
-            #     if(len(input) > 0):
-            #         dataSet = np.concatenate([input[0][1], userInput])[np.newaxis]
-
-            #         #* Guardar datos en un archivo auxiliar
-            #         with open("dataSetAux.csv", 'a') as auxFile:
-            #           np.savetxt(auxFile, dataSet, delimiter=',')
-            #         # np.savetxt('dataSetAux.csv', dataSet, delimiter=',')
-
-            # #! Actualizar el data set para entrenar MLP
-            # # Si el obstaculo sale de la pantalla significa que fue exitoso, entonces ahi lo guarda
-            # # en el dataSet. Por ejemplo, cuando pierda no lo va a guardar.
-            # if(outScreen):
-            #     with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
-            #         content = source_file.read()
-            #         target_file.write(content)
-            #     with open("dataSetAux.csv", 'w') as file:
-            #         file.truncate()
-
-            #! -------- GUARDA LOS VALORES COMO ENTEROS ----------
-
+            #! ---- PARA GUARDAR LOS DATOS DURANTE EL JUEGO PARA USAR EN EL ENTRENAMIENTO ----
             #! Generar data set aux para agregarlo en el data set
             #Primero guarda en el dataSetAux y con el otro "if" guarda solo si fue exitoso 
             # if(userInput[0] or userInput[1] or userInput[2]):
@@ -588,9 +565,8 @@ class Game:
             #         target_file.write(content)
             #     with open("dataSetAux.csv", 'w') as file:
             #         file.truncate()
-
-            #! ------------------
-
+            #! --------
+            
             #* Check dino vivo, sino sale del juego
             if self.numLive == 0:
                 time.sleep(1)
