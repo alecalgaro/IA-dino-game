@@ -329,8 +329,6 @@ class Game:
             self.check_interval = self.VEL_CHECK//self.game_speed
 
     def drawGeneticRecord(self) -> None:
-
-
         txt0 = "Structure: " + str(self.structure)
         txt1 = "Generation: " + str(int(self.geneticRecord[0]))
         txt2 = "Max Score: " + str(int(self.geneticRecord[1]))
@@ -553,10 +551,14 @@ class Game:
         txt = "MLP"
         color = (255, 0, 0)
 
-        if(self.genetic):
+        if(self.genetic and not(self.iPlay)):
             self.drawGeneticRecord()
             txt = "GENETIC"
             color = (0, 255, 0)
+
+        if(self.iPlay):
+            txt = "PLAYER"
+            color = (0, 0, 255)
 
         text = self.FONT3.render(txt, True, color)
         textRect = text.get_rect()
@@ -639,7 +641,7 @@ class Game:
 # Función que muestra el menú inicial y maneja reinicios
 def menu():
     #! ========================[Parametros principales]========================
-    IPLAY = False               #? True = Juega el jugador, False = buscar/generar celebro
+    IPLAY = True               #? True = Juega el jugador, False = buscar/generar celebro
 
     # Configuracion de dino
     N_DINO = 80                 #? Numero de dinos
@@ -674,7 +676,7 @@ def menu():
 
     #! ========================================================================
     run = True
-    if(not(GENETIC)):
+    if(not(IPLAY) and not(GENETIC)):
         N_DINO = 1
         RAND_START = False
         NEURAL_STRUCTURE = [6, 6, 3]
@@ -706,7 +708,7 @@ def menu():
                 dataPopulation = game.main()
                 points = dataPopulation[-1][0]
 
-                if(GENETIC and UPDATE_POPULATION):
+                if(not(IPLAY) and GENETIC and UPDATE_POPULATION):
                     if(len(elite) == 0):
                         elite = dataPopulation[0][1].copy()
 
