@@ -27,6 +27,9 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
     cantCapas = len(arquitectura)   # cantidad de capas que tiene la arquitectura definida (para usar en algunos for)
     errorCuadPlot = []      # vector para graficar error cuadratico por epocas
     tasaErrorPlot = []      # vector para graficar la tasa de error (porcentaje) por epocas
+
+    #! Determinar las cantidades de cada categoria
+    tasaErrorCategoria = []
     
     #* ----- Inicializar estructuras de datos a utilizar -----
 
@@ -85,6 +88,7 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
         # Recordar que es por cada patron, no por epoca. Es decir, hacemos propgacion hacia adelante, 
         # propagacion hacia atras y ajuste de pesos por cada patron.
         for i in range(cantPatrones):
+
 
             #* -- PROPAGACION HACIA ADELANTE --
             # matmul hace el producto matriz-vector (Numpy), asi es mas eficiente. Igual al @ de Python.
@@ -168,6 +172,13 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
         
         # Cargar datos de validacion
         (XX, YYd) = cargarDatos(archivoValidation, arquitectura[-1])
+
+        #! Contador de errores (0 -> Jump, 1 -> Duck, 2 -> Run)
+        errCategoria = [0, 0, 0]
+        cantJump = np.sum(YYd[:,0])
+        cantDuck = np.sum(YYd[:,1])
+        cantRun = np.sum(YYd[:,2])
+
         
         cantPatrones = np.size(XX, 0)    # cantidad de patrones (filas)
         contErrores = 0
@@ -193,7 +204,12 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
             # # .all() comprueba que todos sean True, entonces si no son todos True cuento un error 
             # contErrores += 1 if ((newY == Yd[i]).all()) == False else 0   
 
-            contErrores += np.argmax(Y_vec[-1]) != np.argmax(YYd[i])
+            #! Contador de error
+            idxCorrecta = np.argmax(YYd[i])
+            if(np.argmax(Y_vec[-1]) != idxCorrecta):
+                # Se suma 1 esa categoria cuando fue mal caracterizado
+                errCategoria[idxCorrecta] += 1
+                contErrores += 1
 
             # if i % 5 == 0:
             #     aa = np.zeros_like(Y_vec[-1])
@@ -208,6 +224,13 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
 
             errorProm += EC
 
+        #! Agregar en la lista para hacer plot
+        errCategoria[0] /= cantJump 
+        errCategoria[1] /= cantDuck 
+        errCategoria[2] /= cantRun 
+
+        tasaErrorCategoria.append(errCategoria)
+
         # Calculo de tasa de error en validacion (error de clasificacion)
         tasaErrorActual = contErrores/cantPatrones
         tasaErrorPlot.append(tasaErrorActual)
@@ -220,7 +243,7 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
 
         # Actualizo las graficas de errores
         if(grafError):
-            actualizarGraficasErrores(ax, ax2, errorCuadPlot, tasaErrorPlot)
+            actualizarGraficasErrores(ax, ax2, errorCuadPlot, tasaErrorPlot, tasaErrorCategoria)
             
     #* fin del while general
 

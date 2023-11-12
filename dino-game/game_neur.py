@@ -641,7 +641,7 @@ class Game:
 # Función que muestra el menú inicial y maneja reinicios
 def menu():
     #! ========================[Parametros principales]========================
-    IPLAY = True               #? True = Juega el jugador, False = buscar/generar celebro
+    IPLAY = False               #? True = Juega el jugador, False = buscar/generar celebro
 
     # Configuracion de dino
     N_DINO = 80                 #? Numero de dinos
@@ -652,7 +652,7 @@ def menu():
     NEURAL_STRUCTURE = [6, 8, 3]
 
     #!=================
-    GENETIC = False              #? (True = GENETIC, False = MLP)
+    GENETIC = True              #? (True = GENETIC, False = MLP)
     #!=================
 
 
