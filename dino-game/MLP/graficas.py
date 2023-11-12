@@ -17,20 +17,31 @@ def iniciarGraficasErrores():
 
     return (ax, ax2)
 
-def actualizarGraficasErrores(ax, ax2, errorCuadPlot, tasaErrorPlot):
+def actualizarGraficasErrores(ax, ax2, errorCuadPlot, tasaErrorPlot, tasaErrorCategoria):
     plt.sca(ax)
     plt.cla()
     ax.set_title("Error cuadratico promedio por epoca")
     ax.set_xlabel("Epoca")
     ax.set_ylabel("Error cuadrático promedio")
     ax.plot(errorCuadPlot)
+    ax.grid(True)
 
     plt.sca(ax2)
     plt.cla()
     ax2.set_title("Porcentaje de error por epoca")
     ax2.set_xlabel("Epoca")
     ax2.set_ylabel("Porcentaje de error")
-    ax2.plot(tasaErrorPlot)
+    ax2.plot(tasaErrorPlot, color='k', linewidth=2, label="%Error")
+
+    #! Graficar las tasas de error de cada categoria
+    errCategoria = np.array(tasaErrorCategoria)
+
+    ax2.plot(errCategoria[:, 0], color='r', linestyle='dotted', label="%Jump")
+    ax2.plot(errCategoria[:, 1], color='b', linestyle='dashed', label="%Duck")
+    ax2.plot(errCategoria[:, 2], color='g', linestyle='dashdot', label="%Run")
+    ax2.grid(True)
+
+    ax2.legend()
 
     plt.pause(0.01)
 
