@@ -635,7 +635,6 @@ class Game:
 
         return self.registPoints
                 
-
 # Función que muestra el menú inicial y maneja reinicios
 def menu():
     #! ========================[Parametros principales]========================
@@ -647,18 +646,16 @@ def menu():
     
     # Estructura de la red neuronal
     bSigm = 1
-    NEURAL_STRUCTURE = [6, 8, 3]
+    NEURAL_STRUCTURE = [6, 6, 3]
 
     #!=================
     GENETIC = False              #? (True = GENETIC, False = MLP)
     #!=================
 
-
     #* ===============[Parametros de GENETIC]===============
     # Parametros de algoritmo genetico
-    INIT_DINO_BRAIN = False      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+    INIT_DINO_BRAIN = True      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
     UPDATE_POPULATION = True   #? Actualizar o no la poblacion por medio de mutacion y cruza
-
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
@@ -670,7 +667,6 @@ def menu():
     PROB_CROSS = 0.8
     PROB_MUTA = 0.15
     #* ====================================================
-
 
     #! ========================================================================
     run = True
@@ -753,9 +749,6 @@ def updatePopulation(SELECT_OPER, dataPopulation, NUM_PARENT, REPLACE,
     savePopulation(population, link)
     saveRegister(register, link)
 
-
-
-
 #* Almacenar Poblacion
 def savePopulation(brains, link):
     for idx, Wji in enumerate(brains):
@@ -768,7 +761,6 @@ def savePopulation(brains, link):
 #* Almacenar el registro de poblacion
 def saveRegister(register, link) -> None:
     np.savetxt(link + 'register.csv', register, delimiter=',')
-
 
 #* Extraer la ubicacion del archivo de los pesos
 def getBrainLink(genetic, neural_structure): 
@@ -803,8 +795,6 @@ def getPopulationRegister(GENETIC, INIT_DINOBRAIN, link):
             np.savetxt(path, register, delimiter=",")
     
     return register
-
-
 
 def start_menu():
     SCREEN.fill((255, 255, 255))
