@@ -1,6 +1,5 @@
 import numpy as np
-from entrenamiento_MLP_v1 import *
-from entrenamiento_MLP_v2 import *
+from entrenamiento_MLP import *
 
 archivoTrain = 'train.csv'
 archivoValidation = 'test.csv'
@@ -11,7 +10,8 @@ gammab = 0.001
 bSigm = 1
 grafError = True
 
-Wji = entrenamiento_MLP_v2(archivoTrain, 
+#* Ejecutar entrenamiento y obtener pesos de la red
+Wji = entrenamiento_MLP(archivoTrain, 
                         archivoValidation,
                         arquitectura, 
                         tasaErrorAceptable, 
@@ -22,6 +22,7 @@ Wji = entrenamiento_MLP_v2(archivoTrain,
 
 print(Wji)
 
+#* Guardar pesos obtenidos en archivo csv
 # with open("neurWeightMLP.csv", 'w') as file:
 #     for weight in Wji:
 #         np.savetxt(file, weight, delimiter=',')

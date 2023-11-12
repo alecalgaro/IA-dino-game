@@ -713,8 +713,8 @@ def updatePopulation(SELECT_OPER, dataPopulation, NUM_PARENT, REPLACE,
         case _:     # ruleta
             parent = roulette(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
     
-    parent[0] = elite   #! elitismo (ESE INDIVIDUO DEBERIA PASAR SIN CRUZA NI MUTACION.
-                        #! ENTIENDO QUE ABAJO CON parent=parent LO INCLUYE
+    parent[0] = elite  
+    
     # Cruza
     child = crossover(structure=NEURAL_STRUCTURE, parent=parent, 
                         nDino=N_DINO, probability=PROB_CROSS)

@@ -1,10 +1,13 @@
 import numpy as np
 
+#* Operadores de seleccion: ventanas, competencia y ruleta.
+
 def window(dataPopulation, numParent, replace=False):
     """
-    Recibe los datos de la poblacion, almacenado como un conjunto 
-    tuplas [(puntaje, redesNeuronal) * n].
-    Lo bueno es que ya viene ordenado
+    Operador de seleccion mediante ventanas.
+    Entradas: los datos de la poblacion, almacenado como un conjunto tuplas [(puntaje, redesNeuronal) * n],
+    el numero de padres a seleccionar y si se admite o no reemplazo.
+    Salida: padres seleccionados.
     """
 
     parent = []
@@ -16,7 +19,7 @@ def window(dataPopulation, numParent, replace=False):
     idxIndiv = np.arange(numIndiv)
     idxBool = np.full(shape=(numIndiv), fill_value=True, dtype=bool)
     
-    # Cantidad a achatar la ventana
+    # Cantidad a achicar la ventana
     reduceAmount = numIndiv//numParent
     start = 0
 
@@ -41,10 +44,13 @@ def window(dataPopulation, numParent, replace=False):
 
 def competition(dataPopulation, numParent, replace=False):
     """
-    Recibe los datos de la poblacion almacenado como un conjunto 
-    tuplas [(puntaje, redesNeuronal) * n].
-    Se elige k individuos a competir hasta obtener n padres
+    Operador de seleccion mediante competicion.
+    Entradas: datos de la poblacion almacenado como un conjunto tuplas [(puntaje, redesNeuronal) * n],
+    numero de padres a seleccionar y si adminte o no reemplazo.
+    Se elige k individuos a competir hasta obtener n padres.
+    Salida: padres seleccionados.
     """
+
     parent = []
     numIndiv = len(dataPopulation)
 
@@ -66,18 +72,19 @@ def competition(dataPopulation, numParent, replace=False):
         if(not(replace)):
             idxBool[idxSelected] = False
 
-        # Elegir directamente el maximo, ya que sabemos que los datos vienen ordenado
-        # Por ejemplo los indices seleccionado son [1, 14, 5, 6, 30], el 30 sera seleccionado
+        # Elegir directamente el maximo, ya que sabemos que los datos vienen ordenados
+        # Por ejemplo si los indices seleccionado son [1, 14, 5, 6, 30] sera seleccionado el 30
         idxWinner = np.max(idxSelected)
         parent.append(dataPopulation[idxWinner][1])
     
     return parent
 
-
 def roulette(dataPopulation, numParent, replace=False):
     """
-    Recibe los datos de la poblacion almacenado como un conjunto 
-    tuplas [(puntaje, redesNeuronal) * n].
+    Operador de seleccion mediante ruleta.
+    Entradas: datos de la poblacion almacenado como un conjunto tuplas [(puntaje, redesNeuronal) * n],
+    numero de padres a seleccionar y si adminte o no reemplazo.
+    Salida: padres seleccionados.
     """
     
     parent = []
@@ -88,7 +95,7 @@ def roulette(dataPopulation, numParent, replace=False):
 
     idxIndiv = np.arange(numIndiv)
 
-    # Recolectar los puntajes y despejar las rpbabilidades
+    # Recolectar los puntajes y despejar las probabilidades
     scores = []
     sum = 0
     for score, _ in dataPopulation:
@@ -105,7 +112,6 @@ def roulette(dataPopulation, numParent, replace=False):
         parent.append(dataPopulation[idx][1])
     
     return parent
-
 
 #? Test operator
 

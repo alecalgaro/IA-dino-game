@@ -4,7 +4,7 @@ from sigmoidea import *
 from winnerTakesAll import *
 from graficas import *
 
-def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErrorAceptable, numMaxEpocas,  
+def entrenamiento_MLP(archivoTrain, archivoValidation, arquitectura, tasaErrorAceptable, numMaxEpocas,  
                       gamma, bSigmoidea=1, grafError=False):
     """
     Algoritmo de entrenamiento del perceptron multicapa.
@@ -28,7 +28,7 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
     errorCuadPlot = []      # vector para graficar error cuadratico por epocas
     tasaErrorPlot = []      # vector para graficar la tasa de error (porcentaje) por epocas
 
-    #! Determinar las cantidades de cada categoria
+    # Determinar las cantidades de cada categoria
     tasaErrorCategoria = []
     
     #* ----- Inicializar estructuras de datos a utilizar -----
@@ -173,13 +173,12 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
         # Cargar datos de validacion
         (XX, YYd) = cargarDatos(archivoValidation, arquitectura[-1])
 
-        #! Contador de errores (0 -> Jump, 1 -> Duck, 2 -> Run)
+        # Contador de errores (0 -> Jump, 1 -> Duck, 2 -> Run)
         errCategoria = [0, 0, 0]
         cantJump = np.sum(YYd[:,0])
         cantDuck = np.sum(YYd[:,1])
         cantRun = np.sum(YYd[:,2])
 
-        
         cantPatrones = np.size(XX, 0)    # cantidad de patrones (filas)
         contErrores = 0
         errorProm = 0
@@ -204,7 +203,8 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
             # # .all() comprueba que todos sean True, entonces si no son todos True cuento un error 
             # contErrores += 1 if ((newY == Yd[i]).all()) == False else 0   
 
-            #! Contador de error
+            #* Contador de error
+            # Cantidad de errores por categoria (errCategoria) y cantidad de errores total (contErrores)
             idxCorrecta = np.argmax(YYd[i])
             if(np.argmax(Y_vec[-1]) != idxCorrecta):
                 # Se suma 1 esa categoria cuando fue mal caracterizado
@@ -224,7 +224,7 @@ def entrenamiento_MLP_v2(archivoTrain, archivoValidation, arquitectura, tasaErro
 
             errorProm += EC
 
-        #! Agregar en la lista para hacer plot
+        # Agregar en la lista para hacer plot de error de cada categoria
         errCategoria[0] /= cantJump 
         errCategoria[1] /= cantDuck 
         errCategoria[2] /= cantRun 

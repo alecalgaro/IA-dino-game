@@ -1,7 +1,13 @@
 import numpy as np
 
+#* Operadores de reproduccion: cruza y mutacion.
+
 def crossover(structure, parent, nDino, probability=0.85) -> list:
-    
+    """ 
+    Funcion para realizar la cruza en algoritmo evolutivo.
+    Entrada: estructura de la red, padres, cantidad de dinos usados y probabilidad de cruza.
+    Salida: hijos luego de haber aplicado la cruza.
+    """
     child = []
 
     # Incluir la capa de entrada
@@ -39,10 +45,16 @@ def crossover(structure, parent, nDino, probability=0.85) -> list:
 
     return child
 
-
 def mutation(structure, childs, probability=0.1, score=10) -> list:
+    """
+    Funcion para realizar la mutacion en algoritmo evolutivo.
+    Entradas: estructura de la red, hijos, probabilidad de mutacion y puntuacion obtenida.
+    Salida: hijos luego de haber aplicado la mutacion.
+    """
 
-    # Definir el rango maximo y minimo de numero a sumar 
+    # Definir el rango maximo y minimo de numero a sumar. 
+    # Con eso hacemos que cuando la puntuacion de los dinos es baja se haga una mutacion sumando
+    # un valor mas grande y cuando la puntuacion es alta se mute sumando valores mas chicos.
     base = 5
     maxRange = 1.2/np.emath.logn(base, score)
 
@@ -68,10 +80,3 @@ def mutation(structure, childs, probability=0.1, score=10) -> list:
                 child[i][idxMut[:, 0], idxMut[:, 1]] += np.random.uniform(low=-maxRange, high=maxRange)
 
     return childs
-
-
-
-
-
-
-
