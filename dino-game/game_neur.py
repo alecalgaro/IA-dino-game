@@ -10,12 +10,12 @@ from GENETIC.Operators.reproductionOperator import *
 
 pygame.init()
 
-# Definición de constantes globales
+# Definicion de constantes globales
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# Cargar imágenes para el juego
+# Cargar imagenes para el juego
 root = "dino-game"
 RUNNING = [pygame.image.load(os.path.join(root, "assets/Dino", "DinoRun1.png")),
            pygame.image.load(os.path.join(root, "assets/Dino", "DinoRun2.png"))]
@@ -76,12 +76,9 @@ class Dinosaur:
         self.decision = [False, False, True]
         self.alpha = bSigm
 
-        #? Truco, promocionar aquel dino que realiza varias acciones
-        self.promosion = 0
-
-        # Armo su celebro si NO juego yo
+        # Se arma el cerebro del dino si no juega el jugador
         if(not(iPlay)):
-            if(genetic):
+            if(genetic):    # si se usa algoritmo genetico
                 if(initDinoBrain):
                     #* Inicializar los pesos en el rango [-0.5, 0.5]
                     self.brain.initNeuralWeight(structure)
@@ -89,10 +86,10 @@ class Dinosaur:
                     link += 'brain_' + str(idxBrain) + '.csv'
                     self.brain.loadNeuralWeight(link, structure)
 
-            else:
+            else:       # si se usa solo la red neuronal
                 #* Cargar pesos 
-                # link = 'neurWeightMLP_2.3error.csv'
                 link = 'neurWeightMLP_1.3error.csv'     # EL MEJOR
+                # link = 'neurWeightMLP_2.3error.csv'
                 # link = 'neurWeightMLP.csv'
                 self.brain.loadNeuralWeight(link, structure)
 
@@ -102,40 +99,33 @@ class Dinosaur:
         # decisionPrev = np.argmax(self.decision)
 
         self.decision = self.brain.forwardPropagation(neuralInput, self.alpha)
-
-        #! Ver si llega a ser necesario
-        #? Cuando realiza diversas acciones distintas, lo promosiono
-        #? para superar aquel que saca mayor punto por mantener presionado
-        #? una sola tecla
-        # if(decisionPrev != np.argmax(self.decision)):
-        #     self.promosion += 20
         
     def updateNeuralInput(self):
         self.updateUserInput(self.decision)
 
+    #* Acciones del dino (saltar, agacharse o correr)
     def updateUserInput(self, userInput):
 
-        #* Cuando juegue la red neuronal habria que simular que presiona estas teclas
-        #! si presiona para saltar y no esta saltando
+        #* si presiona para saltar y no esta saltando
         if userInput[0] and not self.dino_jump:
             self.dino_duck = False
             self.dino_run = False
             self.dino_jump = True
             # print("Saltar")
 
-        #! Bajar rapido
+        #* Bajar rapido
         elif userInput[1] and self.dino_jump:
             self.jump_vel -= 2
             # print("Bajar rapido")
 
-        #! si presiona para agacharse y no esta saltando
+        #* si presiona para agacharse y no esta saltando
         elif userInput[1] and not self.dino_jump:
             self.dino_duck = True
             self.dino_run = False
             self.dino_jump = False
             # print("Agacharse")
             
-        #! si no esta saltando ni presionando para agacharse o saltar
+        #* si no esta saltando ni presionando para agacharse o saltar
         elif not (self.dino_jump or userInput[0] or userInput[1]):
             self.dino_duck = False
             self.dino_run = True
@@ -153,16 +143,13 @@ class Dinosaur:
         if self.step_index >= 10:
             self.step_index = 0
 
-    #* Necesitamos solo su eje y
+    # Obtener eje "y" del dino
     def getDinoData(self):
         return (self.dino_rect.y)
     
-    # Devolver su celebro, pesos sinapticos
+    # Devolver el cerebro del dino (pesos sinapticos)
     def getDinoBrain(self):
         return self.brain.getNeuralWeight()
-    
-    def getDinoPromosion(self):
-        return self.promosion
 
 #? =================================[Estados del Dino]=================================
     def duck(self):
@@ -217,10 +204,8 @@ class Dinosaur:
 #     def draw(self, SCREEN):
 #         SCREEN.blit(self.image, (self.x, self.y))
 
-# Clase base para obstáculos en el juego
-
 #todo ========================================[Class Obstaculo]========================================
-class Obstacle:
+class Obstacle:     # Clase base para obstaculos en el juego
     def __init__(self, image, type):
         self.image = image
         self.type = type
@@ -272,14 +257,14 @@ class Bird(Obstacle):
 
 class Game:
 
-    # Valores constantes en mayuscula
+    # Variables constantes
     CLOCK = pygame.time.Clock()
     FONT = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
     FONT2 = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 15)
     FONT3 = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 35)
     X_POS_BG = 0
     Y_POS_BG = 380
-    VEL_CHECK = 60
+    VEL_CHECK = 60    # velocidad que se usa luego para registrar datos del juego
     MAX_SPEED = 80
 
     #* ==================[Constructor, inicializacion]==================
@@ -288,7 +273,7 @@ class Game:
                  initDinoBrain=False, genetic=False, structure=[], 
                  bSigm=1, link='', geneticRecord=[]):
         self.run = True
-        self.iPlay = iPlay #? Juega el juador, sino ignora sus inputs
+        self.iPlay = iPlay  #? Si es True juega el juador, sino ignora sus inputs de teclado
 
         # Parametros para dino
         self.player = []
@@ -301,11 +286,11 @@ class Game:
         self.idxBoolLive = np.full(shape=(nDino), fill_value=True, dtype=bool) #? Control del muerto
 
         # Obstaculos
-        self.obstacles = deque([])      #? variable que nos interesa para la red neuronal
+        self.obstacles = deque([])    
 
         # self.cloud = Cloud()
-        self.game_speed = 14     #? variable que nos interesa para la red neuronal
-        self.points = 0     #? variable que nos interesa para el algoritmo evolutivo
+        self.game_speed = 14     # velocidad inicial del juego
+        self.points = 0          # puntos iniciales en el juego
         self.registPoints = []
 
         # Datos para mostrar en la pantalla
@@ -313,7 +298,8 @@ class Game:
         self.genetic = genetic
         self.geneticRecord = geneticRecord
 
-        # n frame hace un check
+        # cada cierta cantidad de frames se registran los datos del juegos y se guardan o se envian 
+        # a la red, para eso usamos estas variables counter y check_interval
         self.counter = 0
         self.check_interval = self.VEL_CHECK//self.game_speed
 
@@ -328,6 +314,7 @@ class Game:
             self.game_speed = min(self.MAX_SPEED, self.game_speed + 0.2)
             self.check_interval = self.VEL_CHECK//self.game_speed
 
+    # Mostrar informacion en la pantalla
     def drawGeneticRecord(self) -> None:
         txt0 = "Structure: " + str(self.structure)
         txt1 = "Generation: " + str(int(self.geneticRecord[0]))
@@ -365,8 +352,6 @@ class Game:
         textRect.topleft = (x, y)
         SCREEN.blit(text, textRect)
 
-
-
     def drawScore(self):
         text = self.FONT.render("Points: " + str(self.points), True, (0, 0, 0))
         textRect = text.get_rect()
@@ -391,8 +376,9 @@ class Game:
 
             #* Crear nuevo obstaculo
             self.time_prev = time.time()
-            self.time_next_obstacle = random.uniform(0.6, 2)    # tiempo entre generacion de obstaculos
+            self.time_next_obstacle = random.uniform(0.6, 2)  # tiempo entre generacion de obstaculos
 
+            # se le da mas probabilidad a Bird para que aparezcan mas aves
             idx_obs = np.random.choice([0, 1, 2], p=[0.2, 0.2, 0.6])
             match idx_obs:
                 case 0:
@@ -406,11 +392,10 @@ class Game:
         obs_data = self.obstacles[0].getObstacleData()
         # out = obs_data[0] < -obs_data[2]
         out = obs_data[0] < (-obs_data[2] + 20)
-        # out = obs_data[0] == -10
         if out:
             self.obstacles.popleft()
 
-        #* Actualizar 
+        #* Actualizar
         for obstacle in self.obstacles:
             obstacle.update(self.game_speed)
 
@@ -428,7 +413,7 @@ class Game:
 
         # Si el primer obstaculo ya paso donde esta dino, chequeo con el siguiente (cuando existe)
         obstacleData = obstacle.getObstacleData()
-        if (obstacleData[0] + obstacleData[3] < X_POS) and len(self.obstacles) > 1:
+        if (obstacleData[0] + obstacleData[2] < X_POS) and len(self.obstacles) > 1:
             obstacle = self.obstacles[1]
 
         # Armar el collision rect de obstaculo
@@ -458,7 +443,7 @@ class Game:
 
         userInput = [False, False, False]
 
-        # Juega el jugador, actualiza en base a eso
+        # Actualizacion si juega el jugador
         if(self.iPlay):
             userInput = pygame.key.get_pressed()
             userInput = [userInput[pygame.K_UP], userInput[pygame.K_DOWN], userInput[pygame.K_RIGHT]]
@@ -467,10 +452,9 @@ class Game:
                 self.player[idx].updateUserInput(userInput)
                 self.player[idx].update()
         
-        # Juega con la neurona
+        # Actualizacion si juega con la neurona
         else:
-            # Si es el frame de tomar desicion, toma todas las entradas 
-            # de todo los dinos vivos
+            # Si es el frame de tomar una decision, toma todas las entradas de todo los dinos vivos
             if self.counter == 0:
                 # Es una lista de tuplas (idx, input)
                 neuralInputs = self.getNeuronalInput()
@@ -480,7 +464,7 @@ class Game:
                     self.player[idx].updateNeuralInput()
                     self.player[idx].update()
 
-            # Simplemente actualiza la grafica
+            # Actualiza la grafica
             else:
                 for idx in self.idxLive[self.idxBoolLive]:
                     self.player[idx].updateNeuralInput()
@@ -492,6 +476,7 @@ class Game:
         return userInput
     
     #? ========================[Neuronal Input]========================
+    # Obtener datos del juego que nos interesan registrar o enviar a la red
     def getNeuronalInput(self):
         inputs = []
 
@@ -499,50 +484,40 @@ class Game:
         X_POS = 80
 
         if(len(self.obstacles) > 0):
-            # Con getObstacleData sacamos (x, y, ancho, alto) del obstaculo
+            # Con getObstacleData obtenemos (x, y, ancho, alto) del obstaculo
             obstacleData = self.obstacles[0].getObstacleData()
         else:
             return inputs
 
-        # Si el primer obstaculo ya paso donde esta dino, chequeo con el siguiente (cuando existe)
+        # Si el primer obstaculo ya paso donde esta el dino, chequeo con el siguiente (cuando existe)
         if (obstacleData[0] + obstacleData[2] < X_POS) and len(self.obstacles) > 1:
             obstacleData = self.obstacles[1].getObstacleData()
 
-        # Normalizamos para tener distancia al obstaculo / velocidad del juego
+        # Distancia del dino al obstaculo
         dist = obstacleData[0] - X_POS
-        # dist_norm = dist/self.game_speed 
         
         # for player in self.player:
         for idx in self.idxLive[self.idxBoolLive]:
             player = self.player[idx]
-            # [
-            # dist_norm
-            # velocidad del juego
-            # Y_DINO
-            # Y_obstaculo
-            # ancho_obstaculo
-            # alto_obstaculo
-            # ]
             
-            input = [dist,             # distancia/velocidad
-                     self.game_speed,        # velocidad_juego
+            input = [dist,                  # distancia
+                     self.game_speed,       # velocidad_juego
                      player.getDinoData(),  # Y_DINO
                      obstacleData[1],       # Y_Obstaculo
                      obstacleData[2],       # ancho_obstaculo
-                     obstacleData[3]       # alto_obstaculo
+                     obstacleData[3]        # alto_obstaculo
                      ]
             
-            # Guardar las tuplas de inputs de dino vivo
-            if(dist > 0):    # para que no guarde distancias negativas que son en los frames cuando el ostaculo pasa al dino 
+            # Guardar las tuplas de inputs del dino vivo
+            if(dist > 0):    # para que no guarde distancias negativas que son en los frames cuando el obstaculo pasa al dino 
                 inputs.append((idx, input))
-                # print("dist:", f'{input[0]:.2f}')
-                # print(f'{valor:.2f}')
 
         return inputs
 
     #! ======================[DIBUJAR TODO]======================
+    # Actualizar pantalla con los textos y graficos
     def updateScreen(self):
-        #! Aqui deberia estar el screen.fill
+        # Aqui deberia estar el screen.fill (lo pasamos al main)
         # SCREEN.fill((255, 255, 255))
 
         self.drawScore()
@@ -568,7 +543,7 @@ class Game:
         for obstacle in self.obstacles:
             obstacle.draw(SCREEN)
 
-        # Solo dibuja lo que estan vivo
+        # Solo dibuja los dinos que estan vivo
         for idx in self.idxLive[self.idxBoolLive]: 
             self.player[idx].draw(SCREEN)
 
@@ -590,15 +565,15 @@ class Game:
 
             self.points += 1
 
-            userInput = self.updatePlayer()
+            # userInput y outScreen se usan en el bloque para guardar datos en csv
+            userInput = self.updatePlayer()     
             outScreen = self.updateObstacle()
             self.updateSpeed()
 
             self.collision()
 
-            #! ---- PARA GUARDAR LOS DATOS DURANTE EL JUEGO PARA USAR EN EL ENTRENAMIENTO ----
-            #! Generar data set aux para agregarlo en el data set
-            #Primero guarda en el dataSetAux y con el otro "if" guarda solo si fue exitoso 
+            #? ---- Bloque para guardar los datos durante el juego en csv ----
+            #* Primero guarda en el dataSetAux y con el otro "if" guarda solo si fue exitoso el movimiento 
             # if(userInput[0] or userInput[1] or userInput[2]):
             #     input = self.getNeuronalInput()
             #     if(len(input) > 0):
@@ -606,20 +581,20 @@ class Game:
             #         user_input = [int(value) for value in userInput]  # Convierte los valores a enteros
             #         dataSet = np.concatenate([input_data, user_input])[np.newaxis]
 
-            #         #* Guardar datos en un archivo auxiliar
+            #         # Guardar datos en un archivo auxiliar
             #         with open("dataSetAux.csv", 'a') as auxFile:
             #             np.savetxt(auxFile, dataSet, delimiter=',', fmt='%d')  # Utiliza fmt='%d' para guardar enteros
 
-            # #! Actualizar el data set para entrenar MLP
-            # # Si el obstáculo sale de la pantalla significa que fue exitoso, entonces ahí lo guarda
-            # # en el dataSet. Por ejemplo, cuando pierda no lo va a guardar.
+            # #* Actualizar el data set para entrenar el MLP
+            # # Si el obstaculo sale de la pantalla significa que fue exitoso, entonces ahi lo guarda
+            # # en el dataSet, en cambio cuando pierda no se va a guardar ese movimiento
             # if(outScreen):
             #     with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
             #         content = source_file.read()
             #         target_file.write(content)
             #     with open("dataSetAux.csv", 'w') as file:
             #         file.truncate()
-            #! --------
+            #? ----------------
             
             #* Check dino vivo, sino sale del juego
             if self.numLive == 0:
@@ -637,21 +612,23 @@ class Game:
 
         return self.registPoints
                 
-# Función que muestra el menú inicial y maneja reinicios
+# Funcion que muestra el menu inicial y maneja reinicios
+# Aca estan todos los parametros para saber si quiere jugar el jugador, la red neurona o el 
+# algoritmo evolutivo, la estructura de la red y parametros del algoritmo evolutivo
 def menu():
     #! ========================[Parametros principales]========================
-    IPLAY = False               #? True = Juega el jugador, False = buscar/generar celebro
+    IPLAY = False               #? True = Juega el jugador, False = buscar/generar cerebro
 
     # Configuracion de dino
     N_DINO = 80                 #? Numero de dinos
-    RAND_START = False           #? Empezar en una posicion aleatoria
+    RAND_START = False          #? Empezar en una posicion aleatoria
     
     # Estructura de la red neuronal
     bSigm = 1
     NEURAL_STRUCTURE = [6, 6, 3]
 
     #!=================
-    GENETIC = True              #? (True = GENETIC, False = MLP)
+    GENETIC = True              #? (True -> GENETIC, False -> MLP)
     #!=================
 
     #* ===============[Parametros de GENETIC]===============
@@ -662,12 +639,12 @@ def menu():
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
     SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
-    NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
+    NUM_PARENT = 0.4            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
     REPLACE = False             #? Admitir o no repeticion de individuos
 
     # Parametros de REPRODUCCION
-    PROB_CROSS = 0.8
-    PROB_MUTA = 0.15
+    PROB_CROSS = 0.9
+    PROB_MUTA = 0.1
     #* ====================================================
 
     #! ========================================================================
@@ -677,7 +654,7 @@ def menu():
         RAND_START = False
         NEURAL_STRUCTURE = [6, 6, 3]
 
-    # Generar el string para ubicar/generar la carpeta donde estan los celebros
+    # Generar el string para ubicar/generar la carpeta donde estan los cerebros
     link = getBrainLink(genetic=GENETIC, neural_structure=NEURAL_STRUCTURE)
     elite = []
 
@@ -696,7 +673,7 @@ def menu():
                 generation = reg[0]
                 maxScore = reg[1]
 
-                #! game = Game()
+                # game = Game()
                 game = Game(nDino=N_DINO, randStart=RAND_START, iPlay=IPLAY,
                             initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, 
                             structure=NEURAL_STRUCTURE, bSigm=bSigm, link=link, 
@@ -728,15 +705,16 @@ def updatePopulation(SELECT_OPER, dataPopulation, NUM_PARENT, REPLACE,
                      NEURAL_STRUCTURE, N_DINO, PROB_CROSS, PROB_MUTA, 
                      points, elite, link, register):
     parent = []
-    match(SELECT_OPER):
-        case 0:
+    match(SELECT_OPER):     # eleccion del operador de seleccion
+        case 0:     # ventana
             parent = window(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
-        case 1:
+        case 1:     # competicion
             parent = competition(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
-        case _:
+        case _:     # ruleta
             parent = roulette(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
     
-    parent[0] = elite
+    parent[0] = elite   #! elitismo (ESE INDIVIDUO DEBERIA PASAR SIN CRUZA NI MUTACION.
+                        #! ENTIENDO QUE ABAJO CON parent=parent LO INCLUYE
     # Cruza
     child = crossover(structure=NEURAL_STRUCTURE, parent=parent, 
                         nDino=N_DINO, probability=PROB_CROSS)
