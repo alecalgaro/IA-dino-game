@@ -3,9 +3,9 @@ from entrenamiento_MLP import *
 
 archivoTrain = 'train.csv'
 archivoValidation = 'test.csv'
-arquitectura = [6, 3]
+arquitectura = [6, 3]   # esta arquitectura no lleva la capa de entrada
 tasaErrorAceptable = 0.01
-numMaxEpocas = 500
+numMaxEpocas = 300
 gammab = 0.001
 bSigm = 1
 grafError = True
@@ -20,7 +20,7 @@ Wji = entrenamiento_MLP(archivoTrain,
                         bSigmoidea=bSigm,
                         grafError=grafError)
 
-print(Wji)
+# print(Wji)
 
 #* Guardar pesos obtenidos en archivo csv
 # with open("neurWeightMLP.csv", 'w') as file:

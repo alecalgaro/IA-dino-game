@@ -7,6 +7,7 @@ from collections import deque
 from Neuron.neuron import Neuron
 from EVOLUTIONARY.Operators.selectionOperator import *
 from EVOLUTIONARY.Operators.reproductionOperator import *
+from EVOLUTIONARY.algEvolutionary import *
 
 pygame.init()
 
@@ -243,7 +244,7 @@ class Bird(Obstacle):
     def __init__(self, image):
         self.type = 0
         super().__init__(image, self.type)
-        self.rect.y = np.random.choice([200, 270, 325], p=[0.55, 0.35, 0.1])
+        self.rect.y = np.random.choice([240, 270, 325], p=[0.55, 0.35, 0.1])
         self.index = 0
 
     def draw(self, SCREEN):
@@ -537,7 +538,7 @@ class Game:
 
         text = self.FONT3.render(txt, True, color)
         textRect = text.get_rect()
-        textRect.center = (550, 50)
+        textRect.center = (300, 50)
         SCREEN.blit(text, textRect)
 
         for obstacle in self.obstacles:
@@ -628,13 +629,13 @@ def menu():
     NEURAL_STRUCTURE = [6, 6, 3]
 
     #!=================
-    EVOLUTIONARY = True              #? (True -> EVOLUTIONARY, False -> MLP)
+    EVOLUTIONARY = False              #? (True -> EVOLUTIONARY, False -> MLP)
     #!=================
 
     #* ===============[Parametros de EVOLUTIONARY]===============
-    # Parametros de algoritmo EVOLUTIONARYo
+    # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = True      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    UPDATE_POPULATION = True   #? Actualizar o no la poblacion por medio de mutacion y cruza
+    UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
@@ -643,12 +644,14 @@ def menu():
     REPLACE = False             #? Admitir o no repeticion de individuos
 
     # Parametros de REPRODUCCION
-    PROB_CROSS = 0.9
-    PROB_MUTA = 0.1
+    PROB_CROSS = 0.9            #? probabilidad de cruza
+    PROB_MUTA = 0.1             #? probabilidad de mutacion por cromosoma
     #* ====================================================
 
     #! ========================================================================
     run = True
+    
+    # Parametros para jugar solo con la red neuronal
     if(not(IPLAY) and not(EVOLUTIONARY)):
         N_DINO = 1
         RAND_START = False
@@ -667,20 +670,23 @@ def menu():
                 run = False
             if event.type == pygame.KEYDOWN:
 
-                # (0 -> generation, 1 -> maxScore)
+                # Obtener cantidad de generacions y puntuacion maxima (0 -> generation, 1 -> maxScore)
                 reg = getPopulationRegister(EVOLUTIONARY, INIT_DINO_BRAIN, link)
-                # Sacar los mejores puntos
                 generation = reg[0]
                 maxScore = reg[1]
 
-                # game = Game()
+                # Se crea una instancia del juego con todos los parametros necesarios
                 game = Game(nDino=N_DINO, randStart=RAND_START, iPlay=IPLAY,
                             initDinoBrain=INIT_DINO_BRAIN, EVOLUTIONARY=EVOLUTIONARY, 
                             structure=NEURAL_STRUCTURE, bSigm=bSigm, link=link, 
                             EVOLUTIONARYRecord=reg)
+                
+                # Se ejecuta el juego y se obtiene la informacion de la poblacion resultante
                 dataPopulation = game.main()
+                # Se obtienen los puntos del ultimo elemento (ultimo dino)
                 points = dataPopulation[-1][0]
 
+                # Logica de evolucion de la poblacion
                 if(not(IPLAY) and EVOLUTIONARY and UPDATE_POPULATION):
                     if(len(elite) == 0):
                         elite = dataPopulation[0][1].copy()
@@ -694,53 +700,13 @@ def menu():
 
                     reg = [generation, maxScore]
 
+                    # Se actualiza la poblacion
                     updatePopulation(SELECT_OPER, dataPopulation, NUM_PARENT, REPLACE, NEURAL_STRUCTURE,
                                      N_DINO, PROB_CROSS, PROB_MUTA, maxScore, elite, link, reg)
            
                     INIT_DINO_BRAIN = False
 
                 restart_menu(points)
-
-def updatePopulation(SELECT_OPER, dataPopulation, NUM_PARENT, REPLACE,
-                     NEURAL_STRUCTURE, N_DINO, PROB_CROSS, PROB_MUTA, 
-                     points, elite, link, register):
-    parent = []
-    match(SELECT_OPER):     # eleccion del operador de seleccion
-        case 0:     # ventana
-            parent = window(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
-        case 1:     # competicion
-            parent = competition(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
-        case _:     # ruleta
-            parent = roulette(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
-    
-    parent[0] = elite  
-    
-    # Cruza
-    child = crossover(structure=NEURAL_STRUCTURE, parent=parent, 
-                        nDino=N_DINO, probability=PROB_CROSS)
-    # Mutacion
-    child = mutation(structure=NEURAL_STRUCTURE, childs=child, 
-                        probability=PROB_MUTA, score=points)
-
-    # Unir los padres hijos
-    population = parent + child
-
-    # Almacenar poblacion en las carpetas que le correspondan
-    savePopulation(population, link)
-    saveRegister(register, link)
-
-#* Almacenar Poblacion
-def savePopulation(brains, link):
-    for idx, Wji in enumerate(brains):
-        path = link + 'brain_' + str(idx) + '.csv'
-
-        with open(path, 'w') as file:
-            for weight in Wji:
-                np.savetxt(file, weight, delimiter=',')
-
-#* Almacenar el registro de poblacion
-def saveRegister(register, link) -> None:
-    np.savetxt(link + 'register.csv', register, delimiter=',')
 
 #* Extraer la ubicacion del archivo de los pesos
 def getBrainLink(EVOLUTIONARY, neural_structure): 
@@ -754,27 +720,6 @@ def getBrainLink(EVOLUTIONARY, neural_structure):
         os.makedirs(link, exist_ok=True)
     
     return link
-
-# Extraer registro de la poblacion
-def getPopulationRegister(EVOLUTIONARY, INIT_DINOBRAIN, link):
-    """
-    When it IS EVOLUTIONARY, it returns
-    [0] -> generation 
-    [1] -> maxScore
-    """
-    register = [int(0), int(0)]
-    if(EVOLUTIONARY and not(INIT_DINOBRAIN)):
-        path = link + "register.csv"
-        
-        # Si existe el registro, extrae los datos. 
-        if(os.path.exists(path)):
-            register = np.genfromtxt(path, delimiter=',')
-
-        # Sino crea el registro.  
-        else:
-            np.savetxt(path, register, delimiter=",")
-    
-    return register
 
 def start_menu():
     SCREEN.fill((255, 255, 255))
