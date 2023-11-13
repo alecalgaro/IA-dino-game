@@ -1,8 +1,8 @@
 import numpy as np
 from entrenamiento_MLP import *
 
-archivoTrain = 'train.csv'
-archivoValidation = 'test.csv'
+archivoTrain = 'datasets/train.csv'
+archivoValidation = 'datasets/test.csv'
 arquitectura = [6, 3]   # esta arquitectura no lleva la capa de entrada
 tasaErrorAceptable = 0.01
 numMaxEpocas = 300

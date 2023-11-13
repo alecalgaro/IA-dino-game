@@ -575,26 +575,26 @@ class Game:
 
             #? ---- Bloque para guardar los datos durante el juego en csv ----
             #* Primero guarda en el dataSetAux y con el otro "if" guarda solo si fue exitoso el movimiento 
-            # if(userInput[0] or userInput[1] or userInput[2]):
-            #     input = self.getNeuronalInput()
-            #     if(len(input) > 0):
-            #         input_data = [int(value) for value in input[0][1]]  # Convierte los valores a enteros
-            #         user_input = [int(value) for value in userInput]  # Convierte los valores a enteros
-            #         dataSet = np.concatenate([input_data, user_input])[np.newaxis]
+            if(userInput[0] or userInput[1] or userInput[2]):
+                input = self.getNeuronalInput()
+                if(len(input) > 0):
+                    input_data = [int(value) for value in input[0][1]]  # Convierte los valores a enteros
+                    user_input = [int(value) for value in userInput]  # Convierte los valores a enteros
+                    dataSet = np.concatenate([input_data, user_input])[np.newaxis]
 
-            #         # Guardar datos en un archivo auxiliar
-            #         with open("dataSetAux.csv", 'a') as auxFile:
-            #             np.savetxt(auxFile, dataSet, delimiter=',', fmt='%d')  # Utiliza fmt='%d' para guardar enteros
+                    # Guardar datos en un archivo auxiliar
+                    with open("datasets/dataSetAux.csv", 'a') as auxFile:
+                        np.savetxt(auxFile, dataSet, delimiter=',', fmt='%d')  # Utiliza fmt='%d' para guardar enteros
 
-            # #* Actualizar el data set para entrenar el MLP
-            # # Si el obstaculo sale de la pantalla significa que fue exitoso, entonces ahi lo guarda
-            # # en el dataSet, en cambio cuando pierda no se va a guardar ese movimiento
-            # if(outScreen):
-            #     with open("dataSetAux.csv", 'r') as source_file, open("dataSet.csv", 'a') as target_file:
-            #         content = source_file.read()
-            #         target_file.write(content)
-            #     with open("dataSetAux.csv", 'w') as file:
-            #         file.truncate()
+            #* Actualizar el data set para entrenar el MLP
+            # Si el obstaculo sale de la pantalla significa que fue exitoso, entonces ahi lo guarda
+            # en el dataSet, en cambio cuando pierda no se va a guardar ese movimiento
+            if(outScreen):
+                with open("datasets/dataSetAux.csv", 'r') as source_file, open("datasets/dataSet.csv", 'a') as target_file:
+                    content = source_file.read()
+                    target_file.write(content)
+                with open("datasets/dataSetAux.csv", 'w') as file:
+                    file.truncate()
             #? ----------------
             
             #* Check dino vivo, sino sale del juego
@@ -618,7 +618,7 @@ class Game:
 # algoritmo evolutivo, la estructura de la red y parametros del algoritmo evolutivo
 def menu():
     #! ========================[Parametros principales]========================
-    IPLAY = False               #? True = Juega el jugador, False = buscar/generar cerebro
+    IPLAY = True               #? True = Juega el jugador, False = buscar/generar cerebro
 
     # Configuracion de dino
     N_DINO = 80                 #? Numero de dinos
