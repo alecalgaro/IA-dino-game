@@ -626,7 +626,7 @@ def menu():
     
     # Estructura de la red neuronal
     bSigm = 1
-    NEURAL_STRUCTURE = [6, 6, 3]
+    NEURAL_STRUCTURE = [6, 3, 3]
 
     #!=================
     EVOLUTIONARY = True              #? (True -> EVOLUTIONARY, False -> MLP)
