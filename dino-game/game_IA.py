@@ -5,8 +5,8 @@ import time
 import numpy as np
 from collections import deque
 from Neuron.neuron import Neuron
-from GENETIC.Operators.selectionOperator import *
-from GENETIC.Operators.reproductionOperator import *
+from EVOLUTIONARY.Operators.selectionOperator import *
+from EVOLUTIONARY.Operators.reproductionOperator import *
 
 pygame.init()
 
@@ -53,7 +53,7 @@ class Dinosaur:
     GRAVITY = 0.6
 
     def __init__(self, randStart = False, iPlay = True, initDinoBrain = False,
-                 genetic=False, structure=[], bSigm=1, idxBrain=0, link=''):
+                 EVOLUTIONARY=False, structure=[], bSigm=1, idxBrain=0, link=''):
         self.duck_img = DUCKING
         self.run_img = RUNNING
         self.jump_img = JUMPING
@@ -78,7 +78,7 @@ class Dinosaur:
 
         # Se arma el cerebro del dino si no juega el jugador
         if(not(iPlay)):
-            if(genetic):    # si se usa algoritmo genetico
+            if(EVOLUTIONARY):    # si se usa algoritmo EVOLUTIONARYo
                 if(initDinoBrain):
                     #* Inicializar los pesos en el rango [-0.5, 0.5]
                     self.brain.initNeuralWeight(structure)
@@ -270,15 +270,15 @@ class Game:
     #* ==================[Constructor, inicializacion]==================
 
     def __init__(self, nDino = 1, randStart=False, iPlay=True, 
-                 initDinoBrain=False, genetic=False, structure=[], 
-                 bSigm=1, link='', geneticRecord=[]):
+                 initDinoBrain=False, EVOLUTIONARY=False, structure=[], 
+                 bSigm=1, link='', EVOLUTIONARYRecord=[]):
         self.run = True
         self.iPlay = iPlay  #? Si es True juega el juador, sino ignora sus inputs de teclado
 
         # Parametros para dino
         self.player = []
         for idx in range(nDino):
-            self.player.append(Dinosaur(randStart, iPlay, initDinoBrain, genetic,
+            self.player.append(Dinosaur(randStart, iPlay, initDinoBrain, EVOLUTIONARY,
                                         structure=structure, bSigm=bSigm, idxBrain=idx, link=link))
 
         self.numLive = nDino
@@ -295,8 +295,8 @@ class Game:
 
         # Datos para mostrar en la pantalla
         self.structure = structure
-        self.genetic = genetic
-        self.geneticRecord = geneticRecord
+        self.EVOLUTIONARY = EVOLUTIONARY
+        self.EVOLUTIONARYRecord = EVOLUTIONARYRecord
 
         # cada cierta cantidad de frames se registran los datos del juegos y se guardan o se envian 
         # a la red, para eso usamos estas variables counter y check_interval
@@ -315,10 +315,10 @@ class Game:
             self.check_interval = self.VEL_CHECK//self.game_speed
 
     # Mostrar informacion en la pantalla
-    def drawGeneticRecord(self) -> None:
+    def drawEVOLUTIONARYRecord(self) -> None:
         txt0 = "Structure: " + str(self.structure)
-        txt1 = "Generation: " + str(int(self.geneticRecord[0]))
-        txt2 = "Max Score: " + str(int(self.geneticRecord[1]))
+        txt1 = "Generation: " + str(int(self.EVOLUTIONARYRecord[0]))
+        txt2 = "Max Score: " + str(int(self.EVOLUTIONARYRecord[1]))
         txt3 = "Alive:" + str(self.numLive)
 
         x = 720
@@ -526,9 +526,9 @@ class Game:
         txt = "MLP"
         color = (255, 0, 0)
 
-        if(self.genetic and not(self.iPlay)):
-            self.drawGeneticRecord()
-            txt = "GENETIC"
+        if(self.EVOLUTIONARY and not(self.iPlay)):
+            self.drawEVOLUTIONARYRecord()
+            txt = "EVOLUTIONARY"
             color = (0, 255, 0)
 
         if(self.iPlay):
@@ -628,11 +628,11 @@ def menu():
     NEURAL_STRUCTURE = [6, 6, 3]
 
     #!=================
-    GENETIC = True              #? (True -> GENETIC, False -> MLP)
+    EVOLUTIONARY = True              #? (True -> EVOLUTIONARY, False -> MLP)
     #!=================
 
-    #* ===============[Parametros de GENETIC]===============
-    # Parametros de algoritmo genetico
+    #* ===============[Parametros de EVOLUTIONARY]===============
+    # Parametros de algoritmo EVOLUTIONARYo
     INIT_DINO_BRAIN = True      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
     UPDATE_POPULATION = True   #? Actualizar o no la poblacion por medio de mutacion y cruza
 
@@ -649,13 +649,13 @@ def menu():
 
     #! ========================================================================
     run = True
-    if(not(IPLAY) and not(GENETIC)):
+    if(not(IPLAY) and not(EVOLUTIONARY)):
         N_DINO = 1
         RAND_START = False
         NEURAL_STRUCTURE = [6, 6, 3]
 
     # Generar el string para ubicar/generar la carpeta donde estan los cerebros
-    link = getBrainLink(genetic=GENETIC, neural_structure=NEURAL_STRUCTURE)
+    link = getBrainLink(EVOLUTIONARY=EVOLUTIONARY, neural_structure=NEURAL_STRUCTURE)
     elite = []
 
     # Graficar el menu del comienzo
@@ -668,20 +668,20 @@ def menu():
             if event.type == pygame.KEYDOWN:
 
                 # (0 -> generation, 1 -> maxScore)
-                reg = getPopulationRegister(GENETIC, INIT_DINO_BRAIN, link)
+                reg = getPopulationRegister(EVOLUTIONARY, INIT_DINO_BRAIN, link)
                 # Sacar los mejores puntos
                 generation = reg[0]
                 maxScore = reg[1]
 
                 # game = Game()
                 game = Game(nDino=N_DINO, randStart=RAND_START, iPlay=IPLAY,
-                            initDinoBrain=INIT_DINO_BRAIN, genetic=GENETIC, 
+                            initDinoBrain=INIT_DINO_BRAIN, EVOLUTIONARY=EVOLUTIONARY, 
                             structure=NEURAL_STRUCTURE, bSigm=bSigm, link=link, 
-                            geneticRecord=reg)
+                            EVOLUTIONARYRecord=reg)
                 dataPopulation = game.main()
                 points = dataPopulation[-1][0]
 
-                if(not(IPLAY) and GENETIC and UPDATE_POPULATION):
+                if(not(IPLAY) and EVOLUTIONARY and UPDATE_POPULATION):
                     if(len(elite) == 0):
                         elite = dataPopulation[0][1].copy()
 
@@ -743,10 +743,10 @@ def saveRegister(register, link) -> None:
     np.savetxt(link + 'register.csv', register, delimiter=',')
 
 #* Extraer la ubicacion del archivo de los pesos
-def getBrainLink(genetic, neural_structure): 
+def getBrainLink(EVOLUTIONARY, neural_structure): 
     link = 'neurWeightMLP.csv'
-    if(genetic):
-        link = 'dino-game/GENETIC/dinoBrain'
+    if(EVOLUTIONARY):
+        link = 'dino-game/EVOLUTIONARY/dinoBrain'
         for num in neural_structure:
             link += '_' + str(num)
         link += '/'
@@ -756,14 +756,14 @@ def getBrainLink(genetic, neural_structure):
     return link
 
 # Extraer registro de la poblacion
-def getPopulationRegister(GENETIC, INIT_DINOBRAIN, link):
+def getPopulationRegister(EVOLUTIONARY, INIT_DINOBRAIN, link):
     """
-    When it IS genetic, it returns
+    When it IS EVOLUTIONARY, it returns
     [0] -> generation 
     [1] -> maxScore
     """
     register = [int(0), int(0)]
-    if(GENETIC and not(INIT_DINOBRAIN)):
+    if(EVOLUTIONARY and not(INIT_DINOBRAIN)):
         path = link + "register.csv"
         
         # Si existe el registro, extrae los datos. 
