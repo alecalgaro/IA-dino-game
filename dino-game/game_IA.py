@@ -626,26 +626,26 @@ def menu():
     
     # Estructura de la red neuronal
     bSigm = 1
-    NEURAL_STRUCTURE = [6, 3, 3]
+    NEURAL_STRUCTURE = [6, 6, 3]
 
     #!=================
-    EVOLUTIONARY = True              #? (True -> EVOLUTIONARY, False -> MLP)
+    EVOLUTIONARY = True         #? (True -> EVOLUTIONARY, False -> MLP)
     #!=================
 
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
-    INIT_DINO_BRAIN = False      #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+    INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
     UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
     SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
-    NUM_PARENT = 0.4            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
+    NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
     REPLACE = False             #? Admitir o no repeticion de individuos
 
     # Parametros de REPRODUCCION
     PROB_CROSS = 0.9            #? probabilidad de cruza
-    PROB_MUTA = 0.1             #? probabilidad de mutacion por cromosoma
+    PROB_MUTA = 0.15             #? probabilidad de mutacion por cromosoma
     #* ====================================================
 
     #! ========================================================================
@@ -711,11 +711,12 @@ def menu():
 #* Extraer la ubicacion del archivo de los pesos
 def getBrainLink(EVOLUTIONARY, neural_structure): 
     link = 'neurWeightMLP.csv'
+    version = ""     #? el formato es _v1 y el original es version = ""
     if(EVOLUTIONARY):
         link = 'dino-game/EVOLUTIONARY/dinoBrain'
         for num in neural_structure:
             link += '_' + str(num)
-        link += '/'
+        link += version + "/"
 
         os.makedirs(link, exist_ok=True)
     
