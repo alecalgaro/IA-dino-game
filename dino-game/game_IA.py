@@ -711,12 +711,12 @@ def menu():
 #* Extraer la ubicacion del archivo de los pesos
 def getBrainLink(EVOLUTIONARY, neural_structure): 
     link = 'neurWeightMLP.csv'
-    version = ""     #? el formato es _v1 y el original es version = ""
+    version = 1     
     if(EVOLUTIONARY):
         link = 'dino-game/EVOLUTIONARY/dinoBrain'
         for num in neural_structure:
             link += '_' + str(num)
-        link += version + "/"
+        link += "_v" + str(version) + "/"  # queda por ejemplo "dinoBrain_6_6_3_v1/"
 
         os.makedirs(link, exist_ok=True)
     
