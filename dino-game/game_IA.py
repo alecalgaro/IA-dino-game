@@ -541,8 +541,9 @@ class Game:
         textRect.center = (300, 50)
         SCREEN.blit(text, textRect)
 
-        for obstacle in self.obstacles:
-            obstacle.draw(SCREEN)
+        #! ------------------------------
+        # for obstacle in self.obstacles:
+        #     obstacle.draw(SCREEN)
 
         # Solo dibuja los dinos que estan vivo
         for idx in self.idxLive[self.idxBoolLive]: 
@@ -621,7 +622,7 @@ def menu():
     IPLAY = False               #? True = Juega el jugador, False = buscar/generar cerebro
 
     # Configuracion de dino
-    N_DINO = 80                 #? Numero de dinos
+    N_DINO = 100                 #? Numero de dinos
     RAND_START = False          #? Empezar en una posicion aleatoria
     
     # Estructura de la red neuronal
@@ -635,17 +636,18 @@ def menu():
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
+    version = 2                 #? num de version para crear la carpeta donde se guardan los pesos
     UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
-    SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
+    SELECT_OPER = 1             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
     NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
     REPLACE = False             #? Admitir o no repeticion de individuos
 
     # Parametros de REPRODUCCION
     PROB_CROSS = 0.9            #? probabilidad de cruza
-    PROB_MUTA = 0.15             #? probabilidad de mutacion por cromosoma
+    PROB_MUTA = 0.15            #? probabilidad de mutacion por cromosoma
     #* ====================================================
 
     #! ========================================================================
@@ -658,7 +660,7 @@ def menu():
         NEURAL_STRUCTURE = [6, 6, 3]
 
     # Generar el string para ubicar/generar la carpeta donde estan los cerebros
-    link = getBrainLink(EVOLUTIONARY=EVOLUTIONARY, neural_structure=NEURAL_STRUCTURE)
+    link = getBrainLink(EVOLUTIONARY=EVOLUTIONARY, neural_structure=NEURAL_STRUCTURE, version=version)
     elite = []
 
     # Graficar el menu del comienzo
@@ -709,9 +711,8 @@ def menu():
                 restart_menu(points)
 
 #* Extraer la ubicacion del archivo de los pesos
-def getBrainLink(EVOLUTIONARY, neural_structure): 
-    link = 'neurWeightMLP.csv'
-    version = 1     
+def getBrainLink(EVOLUTIONARY, neural_structure, version=1): 
+    link = 'neurWeightMLP.csv'   
     if(EVOLUTIONARY):
         link = 'dino-game/EVOLUTIONARY/dinoBrain'
         for num in neural_structure:

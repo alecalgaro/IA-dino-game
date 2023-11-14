@@ -1,0 +1,9 @@
+N_DINO = 100                 #? Numero de dinos
+
+SELECT_OPER = 1             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
+NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
+REPLACE = False             #? Admitir o no repeticion de individuos
+
+# Parametros de REPRODUCCION
+PROB_CROSS = 0.9            #? probabilidad de cruza
+PROB_MUTA = 0.15             #? probabilidad de mutacion por cromosoma
