@@ -541,9 +541,8 @@ class Game:
         textRect.center = (300, 50)
         SCREEN.blit(text, textRect)
 
-        #! ------------------------------
-        # for obstacle in self.obstacles:
-        #     obstacle.draw(SCREEN)
+        for obstacle in self.obstacles:
+            obstacle.draw(SCREEN)
 
         # Solo dibuja los dinos que estan vivo
         for idx in self.idxLive[self.idxBoolLive]: 
@@ -636,7 +635,7 @@ def menu():
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    version = 2                 #? num de version para crear la carpeta donde se guardan los pesos
+    version = 1                 #? num de version para crear la carpeta donde se guardan los pesos
     UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========

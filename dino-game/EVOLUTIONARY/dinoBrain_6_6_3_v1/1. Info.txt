@@ -7,3 +7,7 @@ REPLACE = False             #? Admitir o no repeticion de individuos
 # Parametros de REPRODUCCION
 PROB_CROSS = 0.9            #? probabilidad de cruza
 PROB_MUTA = 0.15             #? probabilidad de mutacion por cromosoma
+
+Comentarios:
+-A partir de la generacion 5 se vio que varios dinos comienzan a avanzar durante mas tiempo,
+y en general 5 o mmas dinos superan los 4000 puntos.
