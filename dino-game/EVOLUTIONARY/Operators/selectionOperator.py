@@ -5,7 +5,7 @@ import numpy as np
 def window(dataPopulation, numParent, replace=False):
     """
     Operador de seleccion mediante ventanas.
-    Entradas: los datos de la poblacion, almacenado como un conjunto tuplas [(puntaje, redesNeuronal) * n],
+    Entradas: los datos de la poblacion, almacenado como un conjunto de tuplas [(puntaje, redNeuronal) * n],
     el numero de padres a seleccionar y si se admite o no reemplazo.
     Salida: padres seleccionados.
     """
@@ -13,22 +13,24 @@ def window(dataPopulation, numParent, replace=False):
     parent = []
     numIndiv = len(dataPopulation)
 
+    # el num de padres viene como porcentaje, entonces lo convertimos a entero
     if(isinstance(numParent, float) and numParent <= 1):
         numParent = int(numIndiv * numParent)
 
-    idxIndiv = np.arange(numIndiv)
-    idxBool = np.full(shape=(numIndiv), fill_value=True, dtype=bool)
+    idxIndiv = np.arange(numIndiv)  # array de 0 a numIndiv-1 para indexar los elementos de la poblacion
+    idxBool = np.full(shape=(numIndiv), fill_value=True, dtype=bool)    # array booleano para controlar los padres que se van seleccionando
     
-    # Cantidad a achicar la ventana
-    reduceAmount = numIndiv//numParent
+    # Cantidad de indiv que se eliminan cada vez para achicar la ventana
+    reduceAmount = numIndiv//numParent   
     start = 0
 
-    # Coleccionar los indices 
+    # Seleccionar y agregar los padres a la lista 
     for _ in range(numParent):
+        # Selecciona un indice aleatorio de los que aun no fueron seleccionados
         idxSelected = np.random.choice(idxIndiv[idxBool])
         start += reduceAmount
 
-        # Si NO admite reemplazo, se setea en Falso
+        # Si no admite reemplazo, se setea en Falso para que no vuelva a ser elegido
         if not(replace):
             idxBool[idxSelected] = False
 
@@ -37,7 +39,10 @@ def window(dataPopulation, numParent, replace=False):
                 # while(not(idxBool[start])):
                 #     start -= 1
         
+        # Achica la ventana colocando en False todos hasta start
         idxBool[:start] = False
+        # Se agrega a la lista de padres la red neuronal correspondiente al indice seleccionado 
+        # dataPopulation[idxSelected][1] es la red neuronal
         parent.append(dataPopulation[idxSelected][1])
     
     return parent
@@ -45,8 +50,8 @@ def window(dataPopulation, numParent, replace=False):
 def competition(dataPopulation, numParent, replace=False):
     """
     Operador de seleccion mediante competicion.
-    Entradas: datos de la poblacion almacenado como un conjunto tuplas [(puntaje, redesNeuronal) * n],
-    numero de padres a seleccionar y si adminte o no reemplazo.
+    Entradas: los datos de la poblacion, almacenado como un conjunto de tuplas [(puntaje, redNeuronal) * n],
+    el numero de padres a seleccionar y si se admite o no reemplazo.
     Se elige k individuos a competir hasta obtener n padres.
     Salida: padres seleccionados.
     """
@@ -54,6 +59,7 @@ def competition(dataPopulation, numParent, replace=False):
     parent = []
     numIndiv = len(dataPopulation)
 
+    # el num de padres viene como porcentaje, entonces lo convertimos a entero
     if(isinstance(numParent, float) and numParent <= 1):
         numParent = int(numIndiv * numParent)
 
@@ -63,18 +69,20 @@ def competition(dataPopulation, numParent, replace=False):
     # Cantidad de individuos a competir
     competitionAmount = numIndiv//numParent
 
-    # Coleccionar los indices 
+    # Seleccionar y agregar los padres a la lista 
     for _ in range(numParent):
-        # Seleccionar n competidores y desactivarlo 
+        # Seleccionar n competidores 
         idxSelected = np.random.choice(idxIndiv[idxBool], size=(competitionAmount), replace=False)
 
-        # Si NO admite reemplazo, seteo en falso
+        # Si no admite reemplazo, seteo en falso
         if(not(replace)):
             idxBool[idxSelected] = False
 
-        # Elegir directamente el maximo, ya que sabemos que los datos vienen ordenados
-        # Por ejemplo si los indices seleccionado son [1, 14, 5, 6, 30] sera seleccionado el 30
+        # Se elige el indice maximo, ya que sabemos que los datos vienen ordenados porque se van 
+        # guardando cada vez que pierden asi que el de mayor puntuacion estara ultimo.
+        # Por ejemplo si los indices seleccionados son [1, 14, 5, 6, 30] sera seleccionado el 30
         idxWinner = np.max(idxSelected)
+        # Se agrega a la lista de padres la red neuronal correspondiente al indice seleccionado 
         parent.append(dataPopulation[idxWinner][1])
     
     return parent
@@ -82,20 +90,22 @@ def competition(dataPopulation, numParent, replace=False):
 def roulette(dataPopulation, numParent, replace=False):
     """
     Operador de seleccion mediante ruleta.
-    Entradas: datos de la poblacion almacenado como un conjunto tuplas [(puntaje, redesNeuronal) * n],
-    numero de padres a seleccionar y si adminte o no reemplazo.
+    Entradas: los datos de la poblacion, almacenado como un conjunto de tuplas [(puntaje, redNeuronal) * n],
+    el numero de padres a seleccionar y si se admite o no reemplazo.
     Salida: padres seleccionados.
     """
     
     parent = []
     numIndiv = len(dataPopulation)
 
+    # el num de padres viene como porcentaje, entonces lo convertimos a entero
     if(isinstance(numParent, float) and numParent <= 1):
         numParent = int(numIndiv * numParent)
 
-    idxIndiv = np.arange(numIndiv)
+    # array de indices de 0 a numIndiv-1 para indexar los elementos de la poblacion
+    idxIndiv = np.arange(numIndiv)  
 
-    # Recolectar los puntajes y despejar las probabilidades
+    # Se recolecta los puntajes, se suman y despeja las probabilidades
     scores = []
     sum = 0
     for score, _ in dataPopulation:
@@ -104,10 +114,10 @@ def roulette(dataPopulation, numParent, replace=False):
 
     probabilities = np.array(scores)/sum
 
-    # Elegir n padres segun la probabilidad
-    # Por defecto no admite reemplazo
+    # Se seleccionan numParent indices de idxIndiv basados en las probabilidades calculadas
     idxParents = np.random.choice(idxIndiv, size=(numParent), p=probabilities, replace=replace)
 
+    # Se recorren los indices seleccionados y se agregan las redes neuronales a la lista de padres
     for idx in idxParents:
         parent.append(dataPopulation[idx][1])
     
