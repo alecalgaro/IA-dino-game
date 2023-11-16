@@ -1,6 +1,0 @@
-SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
-NUM_PARENT = 0.4            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
-REPLACE = False             #? Admitir o no repeticion de individuos
-
-PROB_CROSS = 0.9            #? probabilidad de cruza
-PROB_MUTA = 0.1             #? probabilidad de mutacion por cromosoma
