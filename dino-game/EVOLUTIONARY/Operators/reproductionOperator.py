@@ -40,7 +40,8 @@ def crossover(structure, parent, nDino, probability=0.85) -> list:
                 idxCross = np.random.choice([True, False], size=rowNum)
 
                 # Cruza intercambiando los valores
-                # child1[i][idxCross] seleccionaria las neuronas de child1[i] que se van a cruzar
+                # child1[i][idxCross] seleccionaria las neuronas de child1[i] que se van a cruzar,
+                # es como una cruza de neuronas
                 child1[i][idxCross], child2[i][idxCross] = child2[i][idxCross], child1[i][idxCross]
             
         numChild -= 1
@@ -60,11 +61,16 @@ def mutation(structure, childs, probability=0.1, score=10) -> list:
     Salida: hijos luego de haber aplicado la mutacion.
     """
 
-    # Definir el rango maximo y minimo del numero a sumar. 
+    # Definimos un rango maximo y minimo del numero a sumar en la mutacion. 
     # Con eso hacemos que cuando la puntuacion de los dinos es baja se haga una mutacion sumando
     # un valor mas grande y cuando la puntuacion es alta se mute sumando valores mas chicos.
-    base = 5
-    maxRange = 1.2/np.emath.logn(base, score)
+    # Haciendo la grafica se puede ver como varia dicha funcion.
+    alpha = 0.001
+    maxRange = 0.1 + np.exp(-alpha*score)
+
+    # Otra opcion para definir el rango pero con log:
+    # base = 5
+    # maxRange = 1.2/np.emath.logn(base, score)
 
     # Numero de estructura, por defecto descontar la capa de entrada
     numStruct = len(structure) - 1
