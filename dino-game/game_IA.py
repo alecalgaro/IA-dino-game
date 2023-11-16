@@ -244,7 +244,7 @@ class Bird(Obstacle):
     def __init__(self, image):
         self.type = 0
         super().__init__(image, self.type)
-        self.rect.y = np.random.choice([240, 270, 325], p=[0.55, 0.35, 0.1])
+        self.rect.y = np.random.choice([150, 270, 325], p=[0.45, 0.45, 0.1])
         self.index = 0
 
     def draw(self, SCREEN):
@@ -622,7 +622,7 @@ def menu():
 
     # Configuracion de dino
     N_DINO = 100                 #? Numero de dinos
-    RAND_START = False          #? Empezar en una posicion aleatoria
+    RAND_START = True          #? Empezar en una posicion aleatoria (para que se vean mejor)
     
     # Estructura de la red neuronal
     bSigm = 1
@@ -635,7 +635,7 @@ def menu():
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    version = 1                 #? num de version para crear la carpeta donde se guardan los pesos
+    version = 2                 #? num de version para crear la carpeta donde se guardan los pesos
     UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
@@ -670,6 +670,7 @@ def menu():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
+            # if EVOLUTIONARY or event.type == pygame.KEYDOWN:  # para que inicie el juego nuevamente
 
                 # Obtener cantidad de generacions y puntuacion maxima (0 -> generation, 1 -> maxScore)
                 reg = getPopulationRegister(EVOLUTIONARY, INIT_DINO_BRAIN, link)
@@ -684,16 +685,16 @@ def menu():
                 
                 # Se ejecuta el juego y se obtiene la informacion de la poblacion resultante
                 dataPopulation = game.main()
-                # Se obtienen los puntos del ultimo elemento (ultimo dino)
+                # Se obtienen los puntos del ultimo elemento (ultimo dino, que seria el mejor)
                 points = dataPopulation[-1][0]
 
                 # Logica de evolucion de la poblacion
                 if(not(IPLAY) and EVOLUTIONARY and UPDATE_POPULATION):
-                    if(len(elite) == 0):
+                    if(len(elite) == 0):    # al comienzo inicializamos el elite con el primero
                         elite = dataPopulation[0][1].copy()
 
                     if(maxScore <= points):
-                        # Elitismo
+                        # Elitismo (buscamos el ultimo que sera el mejor)
                         elite = dataPopulation[-1][1].copy()
                         maxScore = points
                     

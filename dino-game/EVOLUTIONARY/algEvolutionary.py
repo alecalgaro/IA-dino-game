@@ -10,16 +10,23 @@ def updatePopulation(SELECT_OPER, dataPopulation, NUM_PARENT, REPLACE,
                      NEURAL_STRUCTURE, N_DINO, PROB_CROSS, PROB_MUTA, 
                      points, elite, link, register):
     parent = []
+
+    numIndiv = len(dataPopulation)
+
+    # el num de padres viene como porcentaje, entonces lo convertimos a entero
+    if(isinstance(NUM_PARENT, float) and NUM_PARENT <= 1):
+        numParent = int(numIndiv * NUM_PARENT)
+
     match(SELECT_OPER):     # eleccion del operador de seleccion
         case 0:     # ventana
-            parent = window(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+            parent = window(dataPopulation, numParent=numParent, numIndiv=numIndiv, replace=REPLACE)
         case 1:     # competicion
-            parent = competition(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+            parent = competition(dataPopulation, numParent=numParent, numIndiv=numIndiv, replace=REPLACE)
         case _:     # ruleta
-            parent = roulette(dataPopulation, numParent=NUM_PARENT, replace=REPLACE)
+            parent = roulette(dataPopulation, numParent=numParent, numIndiv=numIndiv, replace=REPLACE)
     
-    parent[0] = elite   # se agrega el mejor individio para pasarlo a la siguiente poblacion  
-    
+    parent[0] = elite
+
     # Cruza
     child = crossover(structure=NEURAL_STRUCTURE, parent=parent, 
                         nDino=N_DINO, probability=PROB_CROSS)
