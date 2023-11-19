@@ -2,7 +2,7 @@ import numpy as np
 
 #* Operadores de seleccion: ventanas, competencia y ruleta.
 
-def window(dataPopulation, numParent, replace=False):
+def window(dataPopulation, numParent, numIndiv, replace=False):
     """
     Operador de seleccion mediante ventanas.
     Entradas: los datos de la poblacion, almacenado como un conjunto de tuplas [(puntaje, redNeuronal) * n],
@@ -11,11 +11,6 @@ def window(dataPopulation, numParent, replace=False):
     """
 
     parent = []
-    numIndiv = len(dataPopulation)
-
-    # el num de padres viene como porcentaje, entonces lo convertimos a entero
-    if(isinstance(numParent, float) and numParent <= 1):
-        numParent = int(numIndiv * numParent)
 
     idxIndiv = np.arange(numIndiv)  # array de 0 a numIndiv-1 para indexar los elementos de la poblacion
     idxBool = np.full(shape=(numIndiv), fill_value=True, dtype=bool)    # array booleano para controlar los padres que se van seleccionando
@@ -47,7 +42,7 @@ def window(dataPopulation, numParent, replace=False):
     
     return parent
 
-def competition(dataPopulation, numParent, replace=False):
+def competition(dataPopulation, numParent, numIndiv, replace=False):
     """
     Operador de seleccion mediante competicion.
     Entradas: los datos de la poblacion, almacenado como un conjunto de tuplas [(puntaje, redNeuronal) * n],
@@ -57,11 +52,6 @@ def competition(dataPopulation, numParent, replace=False):
     """
 
     parent = []
-    numIndiv = len(dataPopulation)
-
-    # el num de padres viene como porcentaje, entonces lo convertimos a entero
-    if(isinstance(numParent, float) and numParent <= 1):
-        numParent = int(numIndiv * numParent)
 
     idxIndiv = np.arange(numIndiv)
     idxBool = np.full(shape=(numIndiv), fill_value=True, dtype=bool)
@@ -87,7 +77,7 @@ def competition(dataPopulation, numParent, replace=False):
     
     return parent
 
-def roulette(dataPopulation, numParent, replace=False):
+def roulette(dataPopulation, numParent, numIndiv, replace=False):
     """
     Operador de seleccion mediante ruleta.
     Entradas: los datos de la poblacion, almacenado como un conjunto de tuplas [(puntaje, redNeuronal) * n],
@@ -96,11 +86,6 @@ def roulette(dataPopulation, numParent, replace=False):
     """
     
     parent = []
-    numIndiv = len(dataPopulation)
-
-    # el num de padres viene como porcentaje, entonces lo convertimos a entero
-    if(isinstance(numParent, float) and numParent <= 1):
-        numParent = int(numIndiv * numParent)
 
     # array de indices de 0 a numIndiv-1 para indexar los elementos de la poblacion
     idxIndiv = np.arange(numIndiv)  
