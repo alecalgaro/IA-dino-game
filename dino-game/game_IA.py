@@ -623,7 +623,7 @@ def menu():
 
     # Configuracion de dino
     N_DINO = 100                 #? Numero de dinos
-    RAND_START = True          #? Empezar en una posicion aleatoria (para que se vean mejor)
+    RAND_START = False          #? Empezar en una posicion aleatoria (para que se vean mejor)
     
     # Estructura de la red neuronal
     bSigm = 1
@@ -636,12 +636,12 @@ def menu():
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    version = 3                 #? num de version para crear la carpeta donde se guardan los pesos
+    version = 100                 #? num de version para crear la carpeta donde se guardan los pesos
     UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
-    SELECT_OPER = 1             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
+    SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
     NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
     REPLACE = False             #? Admitir o no repeticion de individuos
 
@@ -691,10 +691,11 @@ def menu():
 
                 # Logica de evolucion de la poblacion
                 if(not(IPLAY) and EVOLUTIONARY and UPDATE_POPULATION):
-                    if(len(elite) == 0):    # al comienzo inicializamos el elite con el primero
-                        #! Aquie estaba el problema!!
+
+                    bestBrain = link + 'brain_0.csv' 
+                    if(len(elite) == 0 and os.path.exists(bestBrain)):    # al comienzo inicializamos el elite con el primero
+                        # Armar el elite
                         skipRow = 0
-                        bestBrain = link + 'brain_0.csv' 
                         for nRow in NEURAL_STRUCTURE[1:]:
                             layerWeight = pd.read_csv(bestBrain, delimiter=',', 
                                                     header=None, skiprows=skipRow, nrows=nRow)
