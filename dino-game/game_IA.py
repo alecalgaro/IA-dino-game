@@ -3,6 +3,7 @@ import os
 import random
 import time
 import numpy as np
+import pandas as pd
 from collections import deque
 from Neuron.neuron import Neuron
 from EVOLUTIONARY.Operators.selectionOperator import *
@@ -635,8 +636,8 @@ def menu():
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    version = 4                 #? num de version para crear la carpeta donde se guardan los pesos
-    UPDATE_POPULATION = False    #? Actualizar o no la poblacion por medio de mutacion y cruza
+    version = 3                 #? num de version para crear la carpeta donde se guardan los pesos
+    UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
@@ -691,7 +692,14 @@ def menu():
                 # Logica de evolucion de la poblacion
                 if(not(IPLAY) and EVOLUTIONARY and UPDATE_POPULATION):
                     if(len(elite) == 0):    # al comienzo inicializamos el elite con el primero
-                        elite = dataPopulation[0][1].copy()
+                        #! Aquie estaba el problema!!
+                        skipRow = 0
+                        bestBrain = link + 'brain_0.csv' 
+                        for nRow in NEURAL_STRUCTURE[1:]:
+                            layerWeight = pd.read_csv(bestBrain, delimiter=',', 
+                                                    header=None, skiprows=skipRow, nrows=nRow)
+                            skipRow += nRow
+                            elite.append(layerWeight.to_numpy())
 
                     if(maxScore <= points):
                         # Elitismo (buscamos el ultimo que sera el mejor)

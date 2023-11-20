@@ -24,9 +24,16 @@ def crossover(structure, parent, nDino, probability=0.85) -> list:
         # Seleccionar al azar dos indices de idxs para elegir dos padres
         idxP1, idxP2 = np.random.choice(idxs, size=2, replace=False)
 
-        # Se copian esos dos padres
-        child1 = parent[idxP1].copy()
-        child2 = parent[idxP2].copy()
+        #! Solucionar el problema de copy
+        child1 = []
+        child2 = []
+        for i in range(numStructure - 1):
+            child1.append(parent[idxP1][i].copy())
+            child2.append(parent[idxP2][i].copy())
+
+        # # Se copian esos dos padres
+        # child1 = parent[idxP1].copy()
+        # child2 = parent[idxP2].copy()
     
         # Se tira un numero al azar y si es menor a la probabilidad de cruza se aplica la cruza
         if(np.random.rand() < probability):
