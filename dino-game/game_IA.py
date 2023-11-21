@@ -627,7 +627,7 @@ def menu():
     
     # Estructura de la red neuronal
     bSigm = 1
-    NEURAL_STRUCTURE = [6, 6, 3]
+    NEURAL_STRUCTURE = [6, 3, 3]
 
     #!=================
     EVOLUTIONARY = True         #? (True -> EVOLUTIONARY, False -> MLP)
@@ -641,7 +641,7 @@ def menu():
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
-    SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
+    SELECT_OPER = 2             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
     NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
     REPLACE = False             #? Admitir o no repeticion de individuos
 
