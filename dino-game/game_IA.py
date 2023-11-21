@@ -552,7 +552,7 @@ class Game:
         # self.cloud.draw(SCREEN)
         # self.cloud.update()
 
-        self.CLOCK.tick(50)
+        self.CLOCK.tick(120)
         pygame.display.update()
     
     def main(self):
@@ -636,8 +636,8 @@ def menu():
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    version = 100                 #? num de version para crear la carpeta donde se guardan los pesos
-    UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
+    version = 101                 #? num de version para crear la carpeta donde se guardan los pesos
+    UPDATE_POPULATION = False    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
