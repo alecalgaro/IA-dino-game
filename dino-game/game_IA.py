@@ -635,12 +635,12 @@ def menu():
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    version = 4                 #? num de version para crear la carpeta donde se guardan los pesos
-    UPDATE_POPULATION = False    #? Actualizar o no la poblacion por medio de mutacion y cruza
+    version = 1                 #? num de version para crear la carpeta donde se guardan los pesos
+    UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
-    SELECT_OPER = 1             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
+    SELECT_OPER = 0             #? Operador de seleccion (0 = ventana, 1 = competencia, 2 = ruleta)
     NUM_PARENT = 0.5            #? Cantidad de padres deseados. Admite flotante de rango [0, 1]
     REPLACE = False             #? Admitir o no repeticion de individuos
 
