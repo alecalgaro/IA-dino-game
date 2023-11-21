@@ -183,13 +183,18 @@ import csv
 # 0.5165774851012345
 # 0.001
 
+#todo ==================[list concatenate]==================
+# a = [1, 2, 3]
+# b = [4, 5, 6]
+# c = a + b
+# print(c)
 #todo ==================[list to string]==================
-my_list = [1, 2, 3]
+# my_list = [1, 2, 3]
 
-# 将列表转换为字符串，手动添加方括号
-my_string = str(my_list)
+# # 将列表转换为字符串，手动添加方括号
+# my_string = str(my_list)
 
-print(my_string)
+# print(my_string)
 
 
 #todo ==================[randint]==================
@@ -275,18 +280,24 @@ print(my_string)
 # print(Vi.shape)
 # print(Y)
 #todo ==================[Probar rango de mutacion]==================
-# x = np.linspace(10, 10_000, 1000)#!
+x = np.linspace(0, 10_000, 1000)#!
 # # y = 2/np.log(x) - 0.000015*x
 # # # y = x**float(-0.01) - 0.000015*x
 # # y = 1/x**float(0.1) 
-# base = 5                        #!
-# y = 1/np.emath.logn(base, x)    #!
+# base = 5                        
+# y = 1/np.emath.logn(base, x)    
+alpha = 0.001#!
+y = 0.1 + np.exp(-alpha*x)#!
 
-# y2 = -y
-# plt.plot(x, y)
-# plt.plot(x, y2)
-# plt.grid(True)
-# plt.show()
+y2 = -y
+plt.plot(x, y, label='Cota maxima')
+plt.plot(x, y2, label='Cota minima')
+plt.legend()
+plt.grid(True)
+plt.xlabel('Maximo puntaje')
+plt.ylabel('Cota de mutacion')
+plt.title(r'$\pm (0.1 + e^{-\alpha x }), \alpha = 0.001$')
+plt.show()
 
 #todo ==================[Guardar pesos sinapticos]==================
 
