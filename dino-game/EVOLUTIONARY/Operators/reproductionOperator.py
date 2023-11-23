@@ -24,7 +24,7 @@ def crossover(structure, parent, nDino, probability=0.85) -> list:
         # Seleccionar al azar dos indices de idxs para elegir dos padres
         idxP1, idxP2 = np.random.choice(idxs, size=2, replace=False)
 
-        #! Solucionar el problema de copy
+        # Las lineas de abajo solucionan el problema que teniamos al usar solo copy
         child1 = []
         child2 = []
         for i in range(numStructure - 1):
@@ -47,8 +47,8 @@ def crossover(structure, parent, nDino, probability=0.85) -> list:
                 idxCross = np.random.choice([True, False], size=rowNum)
 
                 # Cruza intercambiando los valores
-                # child1[i][idxCross] seleccionaria las neuronas de child1[i] que se van a cruzar,
-                # es como una cruza de neuronas
+                # child1[i][idxCross] seleccionaria las neuronas de child1[i] que se van a cruzar.
+                # Es una cruza de neuronas
                 child1[i][idxCross], child2[i][idxCross] = child2[i][idxCross], child1[i][idxCross]
             
         numChild -= 1
@@ -91,10 +91,10 @@ def mutation(structure, childs, probability=0.1, score=10) -> list:
                 nPrev = structure[i]    # cantidad de neuronas de la capa previa
                 nNext = structure[i + 1]    # cantidad de neuronas de la capa posterior
 
-                # Definir cantidad de numeros a mutar, se puede usar max o min
+                # Definir cantidad de numeros a mutar (cantidad de pesos), se puede usar max o min
                 nMut = np.random.randint(low=1, high=min(nPrev, nNext))
 
-                # Definir los indices i y j a mutar
+                # Definir los indices i y j a mutar (serian los pesos sinapticos)
                 idxMut = np.random.randint(low=[0, 0], high=[nNext, nPrev + 1], size=(nMut, 2))
 
                 # Sumar numero de mutacion a los indices ij definidos

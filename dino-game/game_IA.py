@@ -552,7 +552,7 @@ class Game:
         # self.cloud.draw(SCREEN)
         # self.cloud.update()
 
-        self.CLOCK.tick(120)
+        self.CLOCK.tick(60)
         pygame.display.update()
     
     def main(self):
@@ -623,11 +623,11 @@ def menu():
 
     # Configuracion de dino
     N_DINO = 100                 #? Numero de dinos
-    RAND_START = False          #? Empezar en una posicion aleatoria (para que se vean mejor)
+    RAND_START = True          #? Empezar en una posicion aleatoria (para que se vean mejor los dinos)
     
     # Estructura de la red neuronal
     bSigm = 1
-    NEURAL_STRUCTURE = [6, 3, 3]
+    NEURAL_STRUCTURE = [6, 6, 3]
 
     #!=================
     EVOLUTIONARY = True         #? (True -> EVOLUTIONARY, False -> MLP)
@@ -636,8 +636,8 @@ def menu():
     #* ===============[Parametros de EVOLUTIONARY]===============
     # Parametros del algoritmo evolutivo
     INIT_DINO_BRAIN = False     #? Inicializacion al azar de los pesos, SINO LEE DE UNA CARPETA
-    version = 1                 #? num de version para crear la carpeta donde se guardan los pesos
-    UPDATE_POPULATION = True    #? Actualizar o no la poblacion por medio de mutacion y cruza
+    version = 2                 #? num de version para crear la carpeta donde se guardan los pesos
+    UPDATE_POPULATION = False    #? Actualizar o no la poblacion por medio de mutacion y cruza
 
     #* ==========[Cuando UPDATE_POPULATION = True]==========
     # Parametros de SELECCION 
