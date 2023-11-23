@@ -1,187 +1,63 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-# #! ===============[Origin]
 
-# def main():
-#     global game_speed, x_pos_bg, y_pos_bg, points, obstacles, check_interval
-#     run = True
-#     clock = pygame.time.Clock()
-#     player = Dinosaur()
-#     obstacles = deque([])      #? variable que nos interesa para la red neuronal
+#todo ==================[Graficas de train]==================
+# # 0 = ventana
+# vent_fit = np.array([2740,2916,3386,12418,12620,12805,12391,12478,12352,13324])
 
-#     # cloud = Cloud()
-#     game_speed = 14     #? variable que nos interesa para la red neuronal
-#     x_pos_bg = 0
-#     y_pos_bg = 380
-#     points = 0      #? variable que nos interesa para el algoritmo evolutivo
-#     font = pygame.font.Font('dino-game/assets/PressStart2P-Regular.ttf', 20)
+# # 1 = competencia
+# comp_fit = np.array([1026 ,548 ,522 ,13338 ,12463 ,13384 ,13760 ,13400 ,13499 ,13520])
 
-#     # Cada n frame hace un check, para no sobrecargar la compu ir chequeando
-#     # frame por frame
-#     counter = 0
-#     vel_check = 220
-#     check_interval = vel_check//game_speed
+# # 2 = ruleta
+# rule_fit = np.array([1436 ,5438 ,5339 ,5894 ,5345 ,5432 ,5453 ,6560 ,6299 ,5732])
 
-#     time_prev = time.time()
-#     time_next_obstacle = 10
+# x = np.arange(len(vent_fit))
+# fig, ax = plt.subplots()
+# ax.plot(x, vent_fit, linewidth=2, linestyle='dotted', label="Ventana")
+# ax.plot(x, comp_fit, linewidth=2, linestyle='dashed', label="Competencia")
+# ax.plot(x, rule_fit, linewidth=2, linestyle='dashdot', label="Ruleta")
+# ax.legend()
+# ax.grid(True)
+# ax.set(
+#     xlabel='Generaciones',
+#     ylabel='Fitness',
+#     title='Entrenamiento por operadores de seleccion',
+#     xticks=x
+# )
+# # ax.set_xticks(x, x+1)
 
-#     def score():
-#         global points, game_speed, check_interval
-#         points += 1
-#         if points % 100 == 0:   # aumenta la velocidad del juego cada 100 puntos
-#             # Tener una velocidad maxima
-#             game_speed = min(60, game_speed + 0.4)
-#             check_interval = vel_check//game_speed
+# plt.show()
 
-#         text = font.render("Points: " + str(points), True, (0, 0, 0))
-#         textRect = text.get_rect()
-#         textRect.center = (920, 40)
-#         SCREEN.blit(text, textRect)
+#todo ==================[Graficas de test]==================
+# 663
+struct_663 = np.array([1026 ,548 ,522 ,13338 ,12463 ,13384 ,13760 ,13400 ,13499 ,13519])
 
-#     def background():
-#         global x_pos_bg, y_pos_bg
-#         image_width = BG.get_width()
-#         SCREEN.blit(BG, (x_pos_bg, y_pos_bg))
-#         SCREEN.blit(BG, (image_width + x_pos_bg, y_pos_bg))
-#         if x_pos_bg <= -image_width:
-#             SCREEN.blit(BG, (image_width + x_pos_bg, y_pos_bg))
-#             x_pos_bg = 0
-#         x_pos_bg -= game_speed
+# 633
+struct_633 = np.array([832 ,560 ,580 ,1206 ,914 ,1883 ,2536 ,5531 ,5165 ,5789])
 
-#     #* ===============[Ciclo principal del juego]===============
-#     while run:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 run = False
+# 683
+struct_683 = np.array([539 ,786 ,507 ,545 ,5342 ,5444 ,5582 ,5699 ,5342 ,5366])
 
-#         SCREEN.fill((255, 255, 255))
+x = np.arange(len(struct_633))
+fig, ax = plt.subplots()
+ax.plot(x, struct_663, linewidth=2, linestyle='dotted', label="[6,6,3]")
+ax.plot(x, struct_633, linewidth=2, linestyle='dashed', label="[6,3,3]")
+ax.plot(x, struct_683, linewidth=2, linestyle='dashdot', label="[6,8,3]")
+ax.legend()
+ax.grid(True)
+ax.set(
+    xlabel='Generaciones',
+    ylabel='Fitness',
+    title='Entrenamiento con distintas arquitecturas',
+    xticks=x
+)
+# ax.set_xticks(x, x+1)
 
-#         #? ===========[Obstaculos]===========
-
-#         #* Generacion de los obstaculos: 
-#         if len(obstacles) == 0 or (time.time() - time_prev) > time_next_obstacle:
-#             time_prev = time.time()
-#             time_next_obstacle = random.uniform(0.6, 3)    # tiempo entre generacion de obstaculos
-#             idx_obs = random.randint(0, 2)
-#             match idx_obs:
-#                 case 0:
-#                     obstacles.append(SmallCactus(SMALL_CACTUS))
-#                 case 1:
-#                     obstacles.append(LargeCactus(LARGE_CACTUS))
-#                 case 2:
-#                     obstacles.append(Bird(BIRD))
-
-        
-#         #* Recorrer y analizar cada uno de los obstaculos
-#         for obstacle in obstacles:
-
-#             # Ajustar el área de colisión para el dinosaurio
-#             # Inflate ajusta un rectangulo alrededor de su centro, que sera la caja de colision
-#             dino_collision_rect = player.dino_rect.inflate(-50, -5)
-#             #! check inflate
-#             # pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(dino_collision_rect))
-
-#             # Ajustar el área de colisión para las aves
-#             if isinstance(obstacle, Bird):
-#                 bird_collision_rect = obstacle.rect.inflate(-60, -5)
-#             else:
-#                 bird_collision_rect = obstacle.rect.inflate(-10, 0)
-
-#             #! check inflate
-#             # pygame.draw.rect(SCREEN, (0, 0, 0), pygame.Rect(bird_collision_rect))
-
-#             # Verificar colisión entre el dinosaurio y el obstáculo
-#             if dino_collision_rect.colliderect(bird_collision_rect):
-#                 pygame.time.delay(200)
-#                 return points
-
-#             obstacle.draw(SCREEN)
-#             obstacle.update()
-
-#         # Chequear y eliminar el ultimo elemento
-#         obs_data = obstacles[0].getObstacleData()
-#         if obs_data[0] < -obs_data[3]:
-#             obstacles.popleft()
-#             # print("borrar")
+plt.show()
 
 
-#         #? ===========[DINO, input]===========
 
-#         # lista de UP y DOWN
-#         userInput = pygame.key.get_pressed()
-#         userInput = [userInput[pygame.K_UP], userInput[pygame.K_DOWN], userInput[pygame.K_SPACE]]
-#         # print(userInput)
-#         player.draw(SCREEN)
-#         player.update(userInput)
-
-#         background()
-
-#         # cloud.draw(SCREEN)
-#         # cloud.update()
-
-#         score()
-
-#         #* Contador de frame, cada n frame hace una "captura", en vez de hacer todo el tiempo 
-#         #* Se puede ver que a medida se aumenta la game_speed, la captura se hace cada vez mas
-#         #* rapido
-#         if counter >= check_interval:
-#             counter = 0
-#             pygame.draw.rect(SCREEN, (255, 0, 0), pygame.Rect(100, 100, 100, 100))
-#         else:
-#             counter += 1
-
-#         clock.tick(50)
-#         pygame.display.update()
-
-# with open('dataSetAux.csv', 'a') as file:
-#     for _ in range(10):
-#         data = np.arange(np.random.randint(3, 8))[np.newaxis]
-#         np.savetxt(file, data, delimiter=',')
-
-import csv
-
-# with open('dataSetAux.csv', 'r') as file:
-#     csvreader = csv.reader(file)
-#     for row in csvreader:
-#         print(type(row))
-
-# with open('dataSetAux.csv', 'a') as file:
-#     datas = [[1, 2, 3], [6, 6], [10]] #! Todos son 1D, se complica la cosa
-#     for data in datas:
-#         np.savetxt(file, [data], delimiter=',') #! De toda manera pasarlo a 2D
-        # np.savetxt(file, data, delimiter=',')
-
-
-# with open('dataSetAux.csv', 'a') as file:
-#     # data = [[1, 2, 3], [6, 6], [10]] #! No se puede por asarray interna
-#     data = [[1, 2, 3]] #* si se puede, 2D!!!!
-#     np.savetxt(file, data, delimiter=',')
-
-# df = pd.read_csv('neurWeightMLP.csv', delimiter=',',dtype=float, na_values=0)
-
-# maxStructure = 10
-# df = pd.read_csv('neurWeightMLP.csv', delimiter=',', usecols=range(10), header=None) #!NOP
-
-
-#? Perfecto
-# structure = [10, 5, 5, 3]
-# skrow = 0
-# for n in structure:
-#     df = pd.read_csv('neurWeightMLP.csv', delimiter=',',
-#                       header=None, skiprows=skrow, nrows=n) 
-#     skrow += n
-#     matrix = df.to_numpy()
-#     print(type(matrix))
-#     print(matrix.shape[0])
-
-# a = np.arange(3)
-# b = [-1]
-# c = np.concatenate([b, a]) # a y b deben ser al menos 1D, no acepta constante que es 0D
-# print(c)
-
-# 0.5165774851012345
-# 0.001
 
 #todo ==================[list concatenate]==================
 # a = [1, 2, 3]
@@ -280,24 +156,24 @@ import csv
 # print(Vi.shape)
 # print(Y)
 #todo ==================[Probar rango de mutacion]==================
-x = np.linspace(0, 10_000, 1000)#!
-# # y = 2/np.log(x) - 0.000015*x
-# # # y = x**float(-0.01) - 0.000015*x
-# # y = 1/x**float(0.1) 
-# base = 5                        
-# y = 1/np.emath.logn(base, x)    
-alpha = 0.001#!
-y = 0.1 + np.exp(-alpha*x)#!
+# x = np.linspace(0, 10_000, 1000)#!
+# # # y = 2/np.log(x) - 0.000015*x
+# # # # y = x**float(-0.01) - 0.000015*x
+# # # y = 1/x**float(0.1) 
+# # base = 5                        
+# # y = 1/np.emath.logn(base, x)    
+# alpha = 0.001#!
+# y = 0.1 + np.exp(-alpha*x)#!
 
-y2 = -y
-plt.plot(x, y, label='Cota maxima')
-plt.plot(x, y2, label='Cota minima')
-plt.legend()
-plt.grid(True)
-plt.xlabel('Maximo puntaje')
-plt.ylabel('Cota de mutacion')
-plt.title(r'$\pm (0.1 + e^{-\alpha x }), \alpha = 0.001$')
-plt.show()
+# y2 = -y
+# plt.plot(x, y, label='Cota maxima')
+# plt.plot(x, y2, label='Cota minima')
+# plt.legend()
+# plt.grid(True)
+# plt.xlabel('Maximo puntaje')
+# plt.ylabel('Cota de mutacion')
+# plt.title(r'$\pm (0.1 + e^{-\alpha x }), \alpha = 0.001$')
+# plt.show()
 
 #todo ==================[Guardar pesos sinapticos]==================
 
